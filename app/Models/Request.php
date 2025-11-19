@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Request extends Model
 {
-    protected $guarded=[''];
+    protected $guarded=[];
 
      public function user(){
  return $this->belongsTo(User::class);
 
 }
- public function poperitys(){
- return $this->belongsTo(Poperity::class);
+ public function poperity(){
+ return $this->belongsTo(Poperity::class,'prp_id');
 }
 
 }

@@ -39,7 +39,7 @@ class User extends Authenticatable
         'remember_token',
     ];
      public function roles(){
- return $this->BelongsToMany(Role::class,'userroles');
+ return $this->BelongsToMany(Role::class, 'userroles', 'id_user', 'role_id');
 }
 public function request(){
  return $this->hasMany(Request::class);
@@ -47,4 +47,9 @@ public function request(){
  public function poperity(){
  return $this->hasMany(Poperity::class);
 }
+public function hasRole($roleName)
+{
+    return $this->roles()->where('name', $roleName)->exists();
+}
+
 }

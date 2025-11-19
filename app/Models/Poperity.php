@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Poperity extends Model
 {
-     protected $guarded=[''];
+     protected $guarded=[];
     public function requests()
     {
         return $this->hasMany(Request::class);
@@ -31,4 +31,5 @@ class Poperity extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }
