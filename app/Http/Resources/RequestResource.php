@@ -17,8 +17,8 @@ class RequestResource extends JsonResource
             'rate' => $this->rate,
             'status' => $this->status,
             'submitted_at' => $this->submission_date,
-            'contract_image' => $this->contract_image
-                ? asset('storage/' . $this->contract_image)
+            'contract_image' => $this->contract
+                ? asset('storage/' . $this->contract)
                 : null,
             
                 'user' => [

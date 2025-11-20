@@ -25,7 +25,7 @@ class StoreRequestRequest extends FormRequest
         if ($propertyId) {
             $property = Poperity::with('typeRequest')->find($propertyId);
             if (optional($property->typeRequest)->name === 'partialSell') {
-                $rules['rate'] = 'required|integer|min:20|max:100';
+                $rules['rate'] = 'required|integer|min:1|max:100';
             }
             
         }
@@ -37,7 +37,7 @@ class StoreRequestRequest extends FormRequest
         return [
             'rate.required' => 'You must enter a rate for partial sale properties.',
             'rate.max' => 'Rate cannot exceed 100%.',
-            'rate.min' => 'Rate must be at least 20%'
+            'rate.min' => 'Rate must be at least 1%'
         ];
     }
 }

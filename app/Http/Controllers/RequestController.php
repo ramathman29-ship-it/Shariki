@@ -44,16 +44,7 @@ class RequestController extends Controller
                         'message'=>'the request rate is greater than the available percentage' 
                     ],400);
                 }
-                $remaining=$property->available_percentage -$request->rate;
-                if($remaining <20)
-                {
-                    return response()->json([
-                        'success' => false,
-                        'message'=>'you cannot submit this rate because the remaining available percentage will be less tahsn 20 ' 
-                    ],400);
-                }
-
-
+             
             }
     
          
@@ -88,14 +79,14 @@ class RequestController extends Controller
         try {
             $user = Auth::user();
     
-            $sentRequests = RequestModel::with(['poperity'])
+            $sentRequests = RequestModel::with(['poperitys'])
                 ->where('user_id', $user->id)
                 ->latest()
                 ->get();
     
             
             $propertyIds = Poperity::where('user_id', $user->id)->pluck('id');
-            $receivedRequests = RequestModel::with(['poperity', 'user'])
+            $receivedRequests = RequestModel::with(['poperitys', 'user'])
                 ->whereIn('prp_id', $propertyIds)
                 ->latest()
                 ->get();
@@ -119,7 +110,7 @@ class RequestController extends Controller
    {
     try{
         $user = Auth::user();
-        $requestItem= RequestModel::with('poperity')->find($id);
+        $requestItem= RequestModel::with('poperitys')->find($id);
         if(!$requestItem){
             return response()->json([
                 'success'=>false,
@@ -165,7 +156,7 @@ class RequestController extends Controller
            }
 
          
-           if (!auth()->$user || !auth()->$user->isAdmin) {
+           if (!$user || !$user->isAdmin()) {
                return response()->json([
                 'success' => false, 
                 'message' => 'Unauthorized'
@@ -204,14 +195,14 @@ class RequestController extends Controller
        try {
            $user = Auth::user();
 
-           if (!auth()->$user|| !auth()->$user->isAdmin) {
+           if (!$user|| !$user->isAdmin()) {
                return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
             ], 403);
            }
 
-           $requests =RequestModel::with(['poperity', 'user'])
+           $requests =RequestModel::with(['poperitys', 'user'])
                ->latest()
                ->get();
 
@@ -267,6 +258,5 @@ class RequestController extends Controller
             ], 500);
         }
     }
-
-
+    
 }
