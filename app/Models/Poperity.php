@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Poperity extends Model
 {
-     protected $guarded=[];
+     protected $guarded=[''];
     public function requests()
     {
         return $this->hasMany(Request::class);
@@ -24,12 +24,11 @@ class Poperity extends Model
 
     public function suffixes()
     {
-        return $this->hasMany(Suffixe::class);
+        return $this->hasMany(Suffixe::class , 'pop_id');
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 }

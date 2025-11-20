@@ -6,13 +6,11 @@ use App\Http\Requests\StoreLoginRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\DB;
 
 
 class Userscontroller extends Controller
@@ -68,6 +66,7 @@ public function login(StoreLoginRequest $request)
             'message' => 'Invalid email or password'
         ], 401);
     }
+    if($user->email !== 'admin@example.com') {
 
     $token = $user->createToken('token')->plainTextToken;
 
@@ -77,6 +76,14 @@ public function login(StoreLoginRequest $request)
         'User' => $user,
         'Token' => $token
     ], 200);
+}
+$token = $user->createToken('admin-token')->plainTextToken;
+
+    return response()->json([
+        'user' => $user,
+        'token' => $token
+    ]);
+
 }
 
 public function logout(Request $request){

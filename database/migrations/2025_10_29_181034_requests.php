@@ -19,7 +19,7 @@ return new class extends Migration
              $table->integer("rate");
              $table->string("description");
              $table->string("status");
-             $table->string("contract")->nullable();
+             $table->string("contract");
             $table->timestamps();
         });
     }

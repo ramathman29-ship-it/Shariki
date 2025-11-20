@@ -22,13 +22,30 @@ class StorePoperityRequest extends FormRequest
     public function rules(): array
     {
         return [
-          "id"=>"require|integer|unique roles,id,except,id"
-, 'address'=>'required|string|max:100',"location"=>'required|string|max:100',
-            "project"=>'nullable|string|max:255', "video"=>'nullable|string|max:255',"area"=>'required|integer',"status"=>'required|string|max:25',
-        "price"=>'required|integer',
-            "description"=>'nullable|string', "condition"=>'required|string|max:100', "RT_id"=>'required|exists:type_requests,id'
-       ,"user_id"=>'required|exists:users,id','type' => 'nullable|string|max:100'
+            'address' => 'required|string|max:100',
+            'location' => 'required|string|max:100',
+            'project' => 'nullable|string|max:255',
+            'video' => 'nullable|string|max:255',
+            'area' => 'required|numeric|min:0',
+            'status' => 'required|string|max:25',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'condition' => 'required|string|max:100',
+            'RT_id' => 'nullable|exists:type_requests,id',
+            'user_id' => 'required|exists:users,id',
+            'type' => 'nullable|string|max:100',
+'type_request'=> 'required|string',
+            // الصور
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
 
+            // اللواحق
+            'suffixes' => 'nullable|array',
+            'suffixes.*.title' => 'required_with:suffixes|string|max:255',
+            'suffixes.*.description' => 'nullable|string|max:500',
+
+            // النسبة المتاحة للبيع
+            'available_percentage' => 'required|numeric|min:0|max:100',
         ];
     }
 }

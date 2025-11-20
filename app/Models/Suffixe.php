@@ -9,6 +9,6 @@ class Suffixe extends Model
      protected $guarded=[''];
   
 public function poperitys(){
- return $this->belongsTo(Poperity::class);
+ return $this->belongsTo(Poperity::class,'pop_id');
 }
 }

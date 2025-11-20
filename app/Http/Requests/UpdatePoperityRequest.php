@@ -27,7 +27,10 @@ class UpdatePoperityRequest extends FormRequest
             "price"=>'sometimes|integer|max:15',
             "description"=>'sometimes|string', "condition"=>'sometimes|string|max:100',
             "RT_id"=>'sometimes|exists:typy__requests'
-       ,"user_id"=>'sometimes|exists:users'
+       , "status"=>'sometimes|string',"user_id"=>'sometimes|exists:users', 'images.*' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'suffixes' => 'nullable|array',
+            'suffixes.*.title' => 'required_with:suffixes|string|max:255',
+            'suffixes.*.description' => 'nullable|string|max:500',
 
         ];
     }

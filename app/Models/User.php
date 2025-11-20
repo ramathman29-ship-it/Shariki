@@ -1,13 +1,11 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends  Authenticatable
 {
     use HasApiTokens, HasFactory;
 
@@ -38,18 +36,24 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-     public function roles(){
- return $this->BelongsToMany(Role::class, 'userroles', 'id_user', 'role_id');
-}
-public function request(){
- return $this->hasMany(Request::class);
-}
- public function poperity(){
- return $this->hasMany(Poperity::class);
-}
-public function hasRole($roleName)
+   public function roles()
 {
-    return $this->roles()->where('name', $roleName)->exists();
+    return $this->belongsToMany(Role::class, 'userroles', 'user_id', 'role_id');
 }
 
+public function isAdmin(): bool
+    {
+        // إذا العلاقة غير محمّلة فحمّلها الآن (يحمي من null)
+        $this->loadMissing('roles');
+
+        // تأكد من أن $this->roles ليس null وأنه Collection
+        if (! $this->roles) {
+            return false;
+        }
+
+        return $this->roles
+            ->pluck('name')                           // عمود اسم الدور في جدول roles
+            ->map(fn($name) => strtolower(trim($name)))
+            ->contains('admin');
+    }
 }

@@ -2,57 +2,221 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Http\Requests\StorePoperityRequest;
+use App\Http\Requests\UpdatePoperityRequest;
 use App\Models\Poperity;
 use App\Models\Image;
 use Illuminate\Http\Request;
+use App\Http\Resources\PoperityResource;
+use App\Models\TypeRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class PoperityController extends Controller
 {
-   
-    public function store(StorePoperityRequest $request)
+    public function __construct()
     {
-       
-        $property = Poperity::create($request->validated());
-
-       
-        $this->storeImages($property, $request->file('images', []));
-
-        
-        $property->load('photos', 'typerequest');
-
-        return response()->json([
-            'message' => 'تم إنشاء العقار بنجاح مع الصور',
-            'property' => $this->formatProperty($property)
-        ], 201);
+        // المصادقة إلزامية لكل شيء باستثناء العرض
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
     }
 
-   
-    public function show($id)
-    {
-        $property = Poperity::with('photos', 'typerequest')->findOrFail($id);
-        return response()->json($this->formatProperty($property));
-    }
-
-    
+    /**
+     * عرض جميع العقارات الموافق عليها فقط
+     */
     public function index(Request $request)
     {
-        $query = Poperity::with('photos', 'typerequest');
+        $query = Poperity::with('photos', 'typerequest')
+                        ->where('is_approved', true); 
 
-       
         $this->applyFilters($query, $request);
 
         $properties = $query->get();
 
-        $data = $properties->map(fn($property) => $this->formatProperty($property));
+        $data = $properties->map(fn($property) => new PoperityResource($property));
 
         return response()->json([
             'count' => $data->count(),
             'properties' => $data
         ]);
     }
+    public function indexnotapprove(Request $request)
+{
+    $query = Poperity::with('photos', 'typerequest')
+                    ->where('is_approved', false); 
 
+    $user = Auth::user();
+
+    if (!$user || !$user->isAdmin()) {
+        return response()->json([
+            'success' => false, 
+            'message' => 'Unauthorized'
+        ], 403);
+    }
+
+    $this->applyFilters($query, $request);
+
+    $properties = $query->get();
+
+    $data = $properties->map(fn($property) => new PoperityResource($property));
+     
+    return response()->json([
+        'count' => $data->count(),
+        'properties' => $data
+    ]);
+}
+
+
+
+
+    /**
+     * إنشاء عقار جديد
+     */
+    public function store(StorePoperityRequest $request)
+    {
+        $user = Auth::user();
+
+        $property = Poperity::create(array_merge(
+            $request->validated(),
+            [
+                'user_id' => $user->id,
+                'is_approved' => false            ]
+        ));
+
+        $this->storeImages($property, $request->file('images', []));
+        $this->storeSuffixe($property, $request->input('suffixes', []));
+         if ($request->filled('type_request')) {
+    $typeRequest = TypeRequest::create([
+        'name' => $request->type_request,
+    ]);
+
+    $property->RT_id = $typeRequest->id;
+    $property->save();
+}
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم إنشاء العقار بنجاح، بانتظار موافقة الإدارة',
+            'property' => new PoperityResource($property)
+        ], 201);
+    }
+
+    /**
+     * عرض عقار واحد
+     */
+    public function shownotapprove(Poperity $poperity)
+    {
+        if (
+            !$poperity->is_approved &&
+            Auth::id() !== $poperity->user_id &&
+            !Auth::user()?->isAdmin()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا العقار بانتظار موافقة الإدارة'
+            ], 403);
+
+        }
+         $poperity->load('photos', 'typerequest', 'suffixes');
+
+        return response()->json([
+            'success' => true,
+            'property' => new PoperityResource($poperity)
+        ]);
+    }
+    public function show (Poperity $poperity){
+         if (
+            !$poperity->is_approved 
+  ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا العقار بانتظار موافقة الإدارة'
+            ], 403);
+        }
+
+        $poperity->load('photos', 'typerequest', 'suffixes');
+
+        return response()->json([
+            'success' => true,
+            'property' => new PoperityResource($poperity)
+        ]);
+
+    }
+
+
+    /**
+     * تحديث عقار
+     */
+    public function update(UpdatePoperityRequest $request, Poperity $poperity)
+    {
+        Gate::authorize('update', $poperity);
+
+        $poperity->update($request->validated());
+
+        $this->storeImages($poperity, $request->file('images', []));
+        $this->storeSuffixe($poperity, $request->input('suffixes', []));
+
+        $poperity->load('photos', 'typerequest', 'suffixes');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تحديث العقار بنجاح',
+            'property' => new PoperityResource($poperity)
+        ]);
+    }
+
+    /**
+     * حذف عقار
+     */
+    public function destroy(Poperity $poperity)
+    {
+        Gate::authorize('delete', $poperity);
+
+        $poperity->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم حذف العقار بنجاح'
+        ]);
+    }
+
+    /**
+     * موافقة الأدمن على العقار
    
+    */
+ 
+
+
+public function approve($id)
+{
+    $user = Auth::user(); 
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'يجب تسجيل الدخول أولاً'
+        ], 401);
+    }
+
+    if (!$user->isAdmin()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'غير مصرح لك بتنفيذ هذه العملية'
+        ], 403);
+    }
+
+    $property = Poperity::findOrFail($id);
+    $property->update(['is_approved' => true]);
+
+    return response()->json([ 
+        'success' => true,
+        'message' => 'تمت الموافقة على العقار بنجاح'
+    ]);
+}
+
+
+    /**
+     * تخزين الصور المرتبطة بالعقار
+     */
     private function storeImages(Poperity $property, array $images)
     {
         foreach ($images as $imageFile) {
@@ -64,48 +228,31 @@ class PoperityController extends Controller
         }
     }
 
-  
+    /**
+     * تخزين اللواحق المرتبطة بالعقار
+     */
+    private function storeSuffixe(Poperity $property, array $suffixes)
+    {
+        foreach ($suffixes as $suff) {
+            $property->suffixes()->create([
+                'title' => $suff['title'],
+                'description' => $suff['description'],
+            ]);
+        }
+    }
+
+    /**
+     * تطبيق الفلترة العامة على الاستعلام
+     */
     private function applyFilters($query, Request $request)
     {
-        if ($request->filled('city')) {
-            $query->where('location', 'LIKE', '%' . $request->city . '%');
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        if ($request->filled('RT_id')) {
-            $query->where('RT_id', $request->RT_id);
-        }
-
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
+        if ($request->filled('city')) $query->where('location', 'LIKE', '%' . $request->city . '%');
+        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('min_price')) $query->where('price', '>=', $request->min_price);
+        if ($request->filled('max_price')) $query->where('price', '<=', $request->max_price);
+        if ($request->filled('RT_id')) $query->where('RT_id', $request->RT_id);
+        if ($request->filled('type')) $query->where('type', $request->type);
     }
-
    
-    private function formatProperty(Poperity $property): array
-    {
-        return [
-            'id' => $property->id,
-            'address' => $property->address,
-            'location' => $property->location,
-            'price' => $property->price,
-            'status' => $property->status,
-            'condition' => $property->condition,
-            'type' => $property->type,
-            'type_request' => $property->typerequest->name ,
-            'images' => $property->photos->map(fn($img) => asset('storage/' . $img->path)),
-            
-        ];
-    }
+
 }

@@ -19,15 +19,16 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('project')->nullable();
           $table->string('type')->nullable();
-
+          $table->float('available_percentage')->default(100);
             $table->string('condition');
             $table->string('video')->nullable();
             $table->integer('area');
             $table->string('status');
              $table->integer('price');
-            
+             $table->boolean('is_approved')->default(false);
               $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-             $table->foreignId('RT_id')->constrained('type_requests')->cascadeOnDelete();
+             $table->foreignId('RT_id')->nullable()->constrained('type_requests')->cascadeOnDelete();
+
             $table->timestamps();
         });
     }

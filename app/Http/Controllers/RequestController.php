@@ -33,15 +33,30 @@ class RequestController extends Controller
                     'message' => 'Property not found'
                 ], 404);
             }
-    
-         
             if ($property->typeRequest && $property->typeRequest->name === 'fullSell') {
                 $rate = 100; 
             } else {
                 $rate = $request->rate; 
+                if($request->rate >$property->available_percentage)
+                {
+                    return response()->json([
+                        'success' => false,
+                        'message'=>'the request rate is greater than the available percentage' 
+                    ],400);
+                }
+                $remaining=$property->available_percentage -$request->rate;
+                if($remaining <20)
+                {
+                    return response()->json([
+                        'success' => false,
+                        'message'=>'you cannot submit this rate because the remaining available percentage will be less tahsn 20 ' 
+                    ],400);
+                }
+
+
             }
     
-           
+         
             $submittedRequest = RequestModel::create([
                 'user_id' => $user->id,
                 'prp_id' => $request->prp_id,
@@ -60,12 +75,7 @@ class RequestController extends Controller
         } catch (\Exception $e) {
             Log::error('Request submission error: ' . $e->getMessage());
     
-            if ($e->getCode() === '23000') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Rate is required for partial sale properties.'
-                ], 400);
-            }
+        
         
             return response()->json([
                 'success' => false,
@@ -146,7 +156,7 @@ class RequestController extends Controller
    {
        try {
            $requestItem = RequestModel::find($id);
-
+           $user=Auth::user();
            if (!$requestItem) {
                return response()->json([
                 'success' => false,
@@ -155,7 +165,7 @@ class RequestController extends Controller
            }
 
          
-           if (Gate::denies('uploadContract', $requestItem)) {
+           if (!auth()->$user || !auth()->$user->isAdmin) {
                return response()->json([
                 'success' => false, 
                 'message' => 'Unauthorized'
@@ -194,7 +204,7 @@ class RequestController extends Controller
        try {
            $user = Auth::user();
 
-           if (Gate::denies('viewAny', RequestModel::class)) {
+           if (!auth()->$user|| !auth()->$user->isAdmin) {
                return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'

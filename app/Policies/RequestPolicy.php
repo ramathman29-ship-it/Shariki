@@ -11,10 +11,8 @@ class RequestPolicy
       /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
-    {
-        return $user->hasRole('admin');
-    }
+   
+    
 
     
     public function view(User $user, Request $request): bool
@@ -25,7 +23,7 @@ class RequestPolicy
     }
     public function updateStatus(User $user, Request $request): bool
     {
-        return $user->hasRole('investor') && $user->id === $request->poperity->user_id;
+        return $user->id === $request->poperity->user_id;
     }
     public function uploadContract(User $user ,Request $request):bool{
         return $user->hasRole('admin');
