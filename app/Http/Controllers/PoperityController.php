@@ -40,32 +40,34 @@ class PoperityController extends Controller
             'properties' => $data
         ]);
     }
-
     public function indexnotapprove(Request $request)
-    {
-        $query = Poperity::with('photos', 'typerequest')
-                        ->where('is_approved', false); 
+{
+    $query = Poperity::with('photos', 'typerequest')
+                    ->where('is_approved', false); 
 
-        $user = Auth::user();
+    $user = Auth::user();
 
-        if (!$user || !$user->isAdmin()) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        $this->applyFilters($query, $request);
-
-        $properties = $query->get();
-
-        $data = $properties->map(fn($property) => new PoperityResource($property));
-         
+    if (!$user || !$user->isAdmin()) {
         return response()->json([
-            'count' => $data->count(),
-            'properties' => $data
-        ]);
+            'success' => false, 
+            'message' => 'Unauthorized'
+        ], 403);
     }
+
+    $this->applyFilters($query, $request);
+
+    $properties = $query->get();
+
+    $data = $properties->map(fn($property) => new PoperityResource($property));
+     
+    return response()->json([
+        'count' => $data->count(),
+        'properties' => $data
+    ]);
+}
+
+
+
 
     /**
      * إنشاء عقار جديد
@@ -73,28 +75,24 @@ class PoperityController extends Controller
     public function store(StorePoperityRequest $request)
     {
         $user = Auth::user();
-    
+
         $property = Poperity::create(array_merge(
             $request->validated(),
             [
                 'user_id' => $user->id,
-                'is_approved' => false
-            ]
+                'is_approved' => false            ]
         ));
 
         $this->storeImages($property, $request->file('images', []));
         $this->storeSuffixe($property, $request->input('suffixes', []));
+         if ($request->filled('type_request')) {
+    $typeRequest = TypeRequest::create([
+        'name' => $request->type_request,
+    ]);
 
-        if ($request->filled('type_request')) {
-            $typeRequest = TypeRequest::create([
-                'name' => $request->type_request,
-            ]);
-            $property->RT_id = $typeRequest->id;
-            $property->save();
-        }
-
-        // تحديث الحالة تلقائيًا
-        $this->updateStatus($property);
+    $property->RT_id = $typeRequest->id;
+    $property->save();
+}
 
         return response()->json([
             'success' => true,
@@ -117,19 +115,19 @@ class PoperityController extends Controller
                 'success' => false,
                 'message' => 'هذا العقار بانتظار موافقة الإدارة'
             ], 403);
-        }
 
-        $poperity->load('photos', 'typerequest', 'suffixes');
+        }
+         $poperity->load('photos', 'typerequest', 'suffixes');
 
         return response()->json([
             'success' => true,
             'property' => new PoperityResource($poperity)
         ]);
     }
-
-    public function show(Poperity $poperity)
-    {
-        if (!$poperity->is_approved) {
+    public function show (Poperity $poperity){
+         if (
+            !$poperity->is_approved 
+  ) {
             return response()->json([
                 'success' => false,
                 'message' => 'هذا العقار بانتظار موافقة الإدارة'
@@ -142,7 +140,9 @@ class PoperityController extends Controller
             'success' => true,
             'property' => new PoperityResource($poperity)
         ]);
+
     }
+
 
     /**
      * تحديث عقار
@@ -155,9 +155,6 @@ class PoperityController extends Controller
 
         $this->storeImages($poperity, $request->file('images', []));
         $this->storeSuffixe($poperity, $request->input('suffixes', []));
-
-        // تحديث الحالة تلقائيًا
-        $this->updateStatus($poperity);
 
         $poperity->load('photos', 'typerequest', 'suffixes');
 
@@ -185,35 +182,37 @@ class PoperityController extends Controller
 
     /**
      * موافقة الأدمن على العقار
-     */
-    public function approve($id)
-    {
-        $user = Auth::user(); 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'يجب تسجيل الدخول أولاً'
-            ], 401);
-        }
+   
+    */
+ 
 
-        if (!$user->isAdmin()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'غير مصرح لك بتنفيذ هذه العملية'
-            ], 403);
-        }
 
-        $property = Poperity::findOrFail($id);
-        $property->update(['is_approved' => true]);
-
-        // تحديث الحالة تلقائيًا
-        $this->updateStatus($property);
-
-        return response()->json([ 
-            'success' => true,
-            'message' => 'تمت الموافقة على العقار بنجاح'
-        ]);
+public function approve($id)
+{
+    $user = Auth::user(); 
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'يجب تسجيل الدخول أولاً'
+        ], 401);
     }
+
+    if (!$user->isAdmin()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'غير مصرح لك بتنفيذ هذه العملية'
+        ], 403);
+    }
+
+    $property = Poperity::findOrFail($id);
+    $property->update(['is_approved' => true]);
+
+    return response()->json([ 
+        'success' => true,
+        'message' => 'تمت الموافقة على العقار بنجاح'
+    ]);
+}
+
 
     /**
      * تخزين الصور المرتبطة بالعقار
@@ -254,20 +253,6 @@ class PoperityController extends Controller
         if ($request->filled('RT_id')) $query->where('RT_id', $request->RT_id);
         if ($request->filled('type')) $query->where('type', $request->type);
     }
+   
 
-    /**
-     * تحديث حالة العقار بناءً على الموافقة ونسبة الإنجاز
-     */
-    private function updateStatus(Poperity $property)
-    {
-        if ($property->available_percentage==0) {
-            $property->status = 'done';
-        } elseif ($property->is_approved) {
-            $property->status = 'view';
-        } else {
-            $property->status = 'building';
-        }
-
-        $property->save();
-    }
 }

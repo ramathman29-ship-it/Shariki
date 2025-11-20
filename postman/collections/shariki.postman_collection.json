@@ -1,0 +1,593 @@
+{
+  "info": {
+    "_postman_id": "7b2d8dbe-9afd-42eb-b730-2da806ca14d1",
+    "name": "shariki",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49116550"
+  },
+  "item": [
+    {
+      "name": "Regester",
+      "id": "43c35027-eae3-40f5-89a0-f7b98c487c08",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"test\",\r\n  \"email\": \"test@example.com\",\r\n  \"password\": \"12345678\",\r\n  \"password_confirmation\": \"12345678\",\r\n  \"personal_id\": \"123456789\",\r\n  \"gender\": \"female\",\r\n  \"birthday\": \"1995-05-05\",\r\n  \"mobile1\": \"0988123456\",\r\n  \"nationality\": \"Syrian\",\r\n  \"job\": \"Engineer\",\r\n  \"residency\": \"Damascus\",\r\n  \"budget\": \"9000\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/register",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "request",
+      "id": "b5d54e7f-bf6c-41c5-8a3f-14ea056cfaa0",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "login",
+      "id": "64c26ed2-d598-42a4-b078-c2168ebb47df",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Brearer 3|0bSad7pBLgscQebEuNatrCc4R7oRBeEaz6j88ycn5d9363a5",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"test@example.com\",\r\n  \"password\": \"12345678\"\r\n}\r\n"
+        },
+        "url": {
+          "raw": "{{api_url}}/login",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "login"
+          ],
+          "query": [
+            {
+              "key": "Authorization: Bearer",
+              "value": "1|YMZlzeTjo2qTU8iviOvFmJa3D11i9N5sOEAu4vTu14f3f3b5",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "request",
+      "id": "45841353-4e20-4c13-a1ab-a009a62d699d",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 4|n5U7SKP6Gusmew8aXSMFejPc2gpXYW5Z4SB62YRU41fdc4e2",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"prp_id\":1 ,\r\n  \"description\": \"Iwant thisss\",\r\n  \"rate\": 100\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/user/requests",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "Authorization: Bearer",
+              "value": "1|YMZlzeTjo2qTU8iviOvFmJa3D11i9N5sOEAu4vTu14f3f3b5",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "allRequests",
+      "id": "33bc8a5a-a0c9-4240-8bce-846d7e09accc",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 2|s4cNFUziVMbrGeRqPqi8ImkCgigTF5w0Ro5gpVVGc1ad6343",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/user/requests",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "requests"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateRequest",
+      "id": "1da9b069-c4d6-4dca-8357-104dbec1e8ee",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 2|s4cNFUziVMbrGeRqPqi8ImkCgigTF5w0Ro5gpVVGc1ad6343",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"status\": \"accepted\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/user/requests/3/status",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "requests",
+            "3",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "uploadContract",
+      "id": "9798c8e9-f4bc-4dbd-8ca8-1ac24714a964",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 3|yZ3D6xTzLFWyt3crhmp1K2NRA2YomGbJ3hjVi2a5b9133818",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "contract",
+              "type": "file",
+              "src": "postman-cloud:///1f0ba504-2a6c-40e0-a290-0fc7e0e56606"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api_url}}/admin/requests/3/contract",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "admin",
+            "requests",
+            "3",
+            "contract"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "index",
+      "id": "20fafb5d-6ac3-47b2-a5a3-57ecb6fc6390",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 5|Vf1MYaXbI7eaYZly7TVTc8QN13goK56njFFqRS9x707ed635",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/admin/requests",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "admin",
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "accepted",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "cancel",
+      "id": "8c42fee0-3fed-47ed-b9d7-ce58553ec97b",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 3|naWx6BNX85aFFaVtSHQPF8tjgfsErfGpCBvLdS4m1289a749",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/user/requests/5/cancel",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "requests",
+            "5",
+            "cancel"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "store Property",
+      "id": "713c7c03-77ac-4f1d-8268-31ab95258587",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": " Bearer 2|s4cNFUziVMbrGeRqPqi8ImkCgigTF5w0Ro5gpVVGc1ad6343",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"address\": \"دمشق - مالكي\",\r\n    \"location\": \"سوريا - دمشق\",\r\n    \"description\": \"شقة فاخرة في موقع مميز\",\r\n    \"project\": \"مشروع المالكي السكني\",\r\n    \"type\": \"شقة\",\r\n    \"available_percentage\": 100,\r\n    \"condition\": \"جديد\",\r\n    \"video\": \"https://example.com/video.mp4\",\r\n    \"area\": 250,\r\n    \"status\": \"متوفر\",\r\n    \"price\": 1000000,\r\n    \"user_id\":1,\r\n    \"type_request\":\"partialSell\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/properties",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "properties"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "aprove property",
+      "id": "8c9e42f4-4390-425f-9f3a-7a72bb140e11",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": " Bearer 3|yZ3D6xTzLFWyt3crhmp1K2NRA2YomGbJ3hjVi2a5b9133818",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/admin/properties/1/approve",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "admin",
+            "properties",
+            "1",
+            "approve"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "loginAdmin",
+      "id": "1fdcda06-f038-405a-ace2-23406df014d6",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"Admin\",\r\n    \"email\": \"admin@example.com\",\r\n    \"password\": \"Admin1234\"\r\n\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/login",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "propertysell",
+      "id": "a7e26627-5ce5-4649-b5ff-6d5e22d33067",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/propertiesall",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "propertiesall"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "propertyDetails",
+      "id": "2addadc1-87eb-4438-b2da-0c2b75f6913f",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/propertiesall/1",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "propertiesall",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "myShares",
+      "id": "2d62ae2f-2d97-4b58-997a-49b91838d8e2",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 4|n5U7SKP6Gusmew8aXSMFejPc2gpXYW5Z4SB62YRU41fdc4e2",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/user/myShares",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "myShares"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "shareDetails",
+      "id": "8c50d879-9c8f-4721-b2ce-2ca77be54a23",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 4|n5U7SKP6Gusmew8aXSMFejPc2gpXYW5Z4SB62YRU41fdc4e2",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/user/myShares/1",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "user",
+            "myShares",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "allShares",
+      "id": "f58e59b3-d789-48c2-a1af-4e49cc78df53",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 3|yZ3D6xTzLFWyt3crhmp1K2NRA2YomGbJ3hjVi2a5b9133818",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{api_url}}/admin/allShares",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "admin",
+            "allShares"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

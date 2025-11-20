@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\PoperityController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RequestController;
@@ -60,13 +61,19 @@ Route::prefix('user')->group(function () {
     Route::put('/requests/{id}/status', [RequestController::class, 'updateStatus']);
    
     Route::get('/requests', [RequestController::class, 'allRequests']);
+    Route::get('/requests/{id}', [RequestController::class, 'show']);
+    Route::get('/myShares',[InvestmentController::class,'myShares']);
+    Route::get('/myShares/{id}',[InvestmentController::class,'myShares']);
+    
 }); 
 
 Route::prefix('admin')->group(function () {
 
     Route::get('/requests', [RequestController::class, 'index']);
-    
+    Route::get('/requests/{id}', [RequestController::class, 'show']);
     Route::post('/requests/{id}/contract', [RequestController::class, 'uploadContract']);
+    Route::get('/allShares',[InvestmentController::class,'allShares']);
+
 });
 
 });
