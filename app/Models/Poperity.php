@@ -11,7 +11,10 @@ class Poperity extends Model
     {
         return $this->hasMany(Request::class);
     }
-
+ public function investments()
+    {
+        return $this->hasMany(Investment::class);
+    }
     public function typeRequest()
     {
         return $this->belongsTo(TypeRequest::class, 'RT_id', 'id');

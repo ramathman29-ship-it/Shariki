@@ -40,20 +40,33 @@ class User extends  Authenticatable
 {
     return $this->belongsToMany(Role::class, 'userroles', 'user_id', 'role_id');
 }
+public function propirties()
+    {
+        return $this->hasMany(Poperity::class , 'user_id');
+    }
+       public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+ public function investments()
+    {
+        return $this->hasMany(Investment::class);
+    }
 
 public function isAdmin(): bool
     {
-        // إذا العلاقة غير محمّلة فحمّلها الآن (يحمي من null)
+        
         $this->loadMissing('roles');
 
-        // تأكد من أن $this->roles ليس null وأنه Collection
+        
         if (! $this->roles) {
             return false;
         }
 
         return $this->roles
-            ->pluck('name')                           // عمود اسم الدور في جدول roles
+            ->pluck('name')                           
             ->map(fn($name) => strtolower(trim($name)))
             ->contains('admin');
     }
+
 }
