@@ -18,7 +18,6 @@ Route::post('role',[RoleController::class,'store']);
 Route::get('role/{id}/user',[RoleController::class,'show']);
 Route::post('register',[Userscontroller::class,'register']);
 Route::post('login',[Userscontroller::class,'login']);
-Route::get('logout',[Userscontroller::class,'logout'])->middleware('auth:sanctum');
 
 Route::get('/propertiesall', [PoperityController::class, 'index']);
 Route::get('/propertiesall/{poperity}', [PoperityController::class, 'show']);
@@ -31,6 +30,9 @@ Route::get('/properties/{poperity}', [PoperityController::class, 'shownotapprove
     Route::post('/properties', [PoperityController::class, 'store']);
     Route::put('/properties/{poperity}', [PoperityController::class, 'update']);
     Route::delete('/properties/{poperity}', [PoperityController::class, 'destroy']);
+    Route::get('logout',[Userscontroller::class,'logout']);
+Route::get('/propertiesforuser',[PoperityController::class, 'indexUser']);
+Route::get('/propertyforuser/{poperity}',[PoperityController::class, 'showUser']);
 });
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 

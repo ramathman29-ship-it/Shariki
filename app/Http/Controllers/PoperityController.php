@@ -66,6 +66,31 @@ class PoperityController extends Controller
             'properties' => $data
         ]);
     }
+    public function indexUser(Request $request)
+    {
+        $query = Poperity::with('photos', 'typerequest');
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $this->applyFilters($query, $request);
+
+        $properties = $query->get();
+
+        $data = $properties->map(fn($property) => new PoperityResource($property));
+         
+        return response()->json([
+            'count' => $data->count(),
+            'properties' => $data
+        ]);
+    }
+
 
     /**
      * إنشاء عقار جديد
@@ -82,9 +107,7 @@ class PoperityController extends Controller
             ]
         ));
 
-        $this->storeImages($property, $request->file('images', []));
-        $this->storeSuffixe($property, $request->input('suffixes', []));
-
+       
         if ($request->filled('type_request')) {
             $typeRequest = TypeRequest::create([
                 'name' => $request->type_request,
@@ -144,6 +167,31 @@ class PoperityController extends Controller
         ]);
     }
 
+    /**عرض تفاصيل عقار للمالك */
+  public function showUser(Poperity $poperity)
+    {
+        
+           
+        
+
+        $user = Auth::user();
+
+        if (!$user) {
+            
+        
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا العقار بانتظار موافقة الإدارة'
+            ], 403);
+        }
+
+        $poperity->load('photos', 'typerequest', 'suffixes');
+
+        return response()->json([
+            'success' => true,
+            'property' => new PoperityResource($poperity)
+        ]);
+    }
     /**
      * تحديث عقار
      */
