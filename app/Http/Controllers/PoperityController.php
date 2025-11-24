@@ -323,4 +323,20 @@ public function approve($id)
     }
    
 
+    /**
+     * تحديث حالة العقار بناءً على الموافقة ونسبة الإنجاز
+     */
+    private function updateStatus(Poperity $property)
+    {
+        if ($property->available_percentage==0) {
+            $property->status = 'done';
+        } elseif ($property->is_approved) {
+            $property->status = 'view';
+        } else {
+            $property->status = 'building';
+        }
+
+        $property->save();
+    }
 }
+
