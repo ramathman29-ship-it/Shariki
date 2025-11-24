@@ -1,0 +1,16 @@
+{
+  "workspace": {
+    "id": "c09f3f57-23d7-46a6-8023-f895559f6ea8"
+  },
+  "entities": {
+    "collections": [
+      "..\\postman\\collections\\shariki.postman_collection.json"
+    ],
+    "environments": [
+      "..\\postman\\environments\\local Development.postman_environment.json"
+    ],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
+}

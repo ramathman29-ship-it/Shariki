@@ -6,7 +6,7 @@ use App\Models\Request as RequestModel;
 
 use App\Models\Poperity;
 use App\Http\Requests\StoreRequestRequest;
-
+use App\Models\Investment;
 use App\Http\Resources\RequestResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
@@ -35,9 +35,9 @@ class RequestController extends Controller
             }
             if ($property->typeRequest && $property->typeRequest->name === 'fullSell') {
                 $rate = 100; 
-            } else {
+            } else if($property->typeRequest && $property->typeRequest->name === 'partialSell'){
                 $rate = $request->rate; 
-                if($request->rate >$property->available_percentage)
+                if($rate > $property->available_percentage)
                 {
                     return response()->json([
                         'success' => false,
@@ -79,15 +79,16 @@ class RequestController extends Controller
         try {
             $user = Auth::user();
     
-            $sentRequests = RequestModel::with(['poperitys'])
+            $sentRequests = RequestModel::with(['poperitys', 'poperitys.user'])
                 ->where('user_id', $user->id)
                 ->latest()
                 ->get();
     
             
             $propertyIds = Poperity::where('user_id', $user->id)->pluck('id');
-            $receivedRequests = RequestModel::with(['poperitys', 'user'])
+            $receivedRequests = RequestModel::with(['poperitys', 'poperitys.user', 'user'])
                 ->whereIn('prp_id', $propertyIds)
+                ->whereNotIn('status', ['done', 'rejected'])
                 ->latest()
                 ->get();
             
@@ -123,6 +124,12 @@ class RequestController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
+        if ($requestItem->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Request status cannot be updated unless it is pending.'
+            ], 400);
+        }
         $request->validate([
             'status' => 'required|in:accepted,rejected'
         ]);
@@ -146,7 +153,9 @@ class RequestController extends Controller
    public function uploadContract(HttpRequest  $request, $id): JsonResponse
    {
        try {
-           $requestItem = RequestModel::find($id);
+           $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
+           $property = $requestItem->poperitys;
+
            $user=Auth::user();
            if (!$requestItem) {
                return response()->json([
@@ -154,14 +163,20 @@ class RequestController extends Controller
                  'message' => 'Request not found'
                 ], 404);
            }
-
+           
+         if($requestItem->rate > $property->available_percentage){
+            $requestItem->update(['status'=>'rejected']);
+            return response()->json([
+                'success' => false,
+                'message' => 'available percentage less than rate'
+            ], 403);}
          
-           if (!$user || !$user->isAdmin()) {
-               return response()->json([
-                'success' => false, 
-                'message' => 'Unauthorized'
-            ], 403);
-           }
+            if (Gate::denies('uploadContract', $requestItem)) {
+                return response()->json([
+                    'success' => false,
+                     'message' => 'Unauthorized'
+                    ], 403);
+            }
            if ($requestItem->status !== 'accepted') {
             return response()->json([
                 'success' => false,
@@ -173,8 +188,36 @@ class RequestController extends Controller
 
            $path = $request->file('contract')->store('contracts', 'public');
 
-           $requestItem->update(['contract' => $path]);
+           $requestItem->update(['contract' => $path ]);
+          
+      
+            $property->available_percentage -= $requestItem->rate;
+            if ($property->available_percentage == 0) {
+                $property->typeRequest->update([
+                    'name' => 'rate'
+                ]);
+            }
+            $property->save();
+            $otherRequests = RequestModel::where('prp_id', $property->id)
+            ->where('id', '!=', $requestItem->id)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->get();
 
+        foreach ($otherRequests as $req) {
+            if ($req->rate > $property->available_percentage) {
+                $req->update(['status' => 'rejected']);
+            }
+        }
+            Investment::create([
+            'user_id'   => $requestItem->user_id,
+            'prp_id'    => $requestItem->prp_id,
+            'rate'      => $requestItem->rate,
+            'contract'  => $path,
+            'submission_date' => now()->toDateString(),
+            ]);
+
+            $requestItem->delete();
+           
            return response()->json([
                'success' => true,
                'message' => 'Contract uploaded successfully',
@@ -194,14 +237,13 @@ class RequestController extends Controller
 
        try {
            $user = Auth::user();
-
-           if (!$user|| !$user->isAdmin()) {
-               return response()->json([
+        
+           if (Gate::denies('viewAny', RequestModel::class)) {
+            return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-           }
-
+                 'message' => 'Unauthorized'
+                ], 403);
+        }
            $requests =RequestModel::with(['poperitys', 'user'])
                ->latest()
                ->get();
@@ -258,5 +300,31 @@ class RequestController extends Controller
             ], 500);
         }
     }
+   
+    public function show($id)
+    {
+    $requestItem = RequestModel::with(['poperitys', 'poperitys.user', 'user'])->find($id);
+
+    if (!$requestItem) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Request not found'
+        ], 404);
+    }
+
     
+    if (Gate::denies('view', $requestItem)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 403);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => new RequestResource($requestItem)
+    ]);
+}
+
+
 }
