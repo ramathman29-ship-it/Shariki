@@ -5,6 +5,7 @@
     "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "49116550"
+
   },
   "item": [
     {
@@ -29,6 +30,7 @@
       "request": {
         "method": "POST",
         "header": [],
+
         "url": {
           "raw": "127.0.0.1:8000/api/login?name=Admin&email=admin@example.com&password=Admin1234",
           "host": [
@@ -60,6 +62,7 @@
         "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
       },
       "response": []
+
     },
     {
       "name": "Post data",
@@ -97,6 +100,7 @@
         "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
       },
       "response": []
+
     },
     {
       "name": "approve",
@@ -109,6 +113,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "add property",
@@ -121,6 +126,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "register",
@@ -133,6 +139,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "login user",
@@ -145,6 +152,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "update",
@@ -157,6 +165,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "shownotapprove",
@@ -169,6 +178,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "show",
@@ -181,6 +191,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "index",
@@ -193,6 +204,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "indexnotapprove",
@@ -205,6 +217,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "delete",
@@ -222,6 +235,7 @@
         },
         "method": "DELETE",
         "header": [],
+
         "url": {
           "raw": "http://127.0.0.1:8000/api/properties/5",
           "protocol": "http",
@@ -240,6 +254,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "index for user",
@@ -257,6 +272,7 @@
         },
         "method": "GET",
         "header": [],
+
         "url": {
           "raw": "http://127.0.0.1:8000/api/propertiesforuser",
           "protocol": "http",
@@ -274,6 +290,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "New Request",
@@ -291,6 +308,7 @@
         },
         "method": "POST",
         "header": [],
+
         "body": {
           "mode": "formdata",
           "formdata": [
@@ -303,6 +321,7 @@
               "key": "images[]",
               "type": "file",
               "src": []
+
             }
           ]
         },
@@ -323,6 +342,7 @@
         }
       },
       "response": []
+
     },
     {
       "name": "show for user",
@@ -340,6 +360,7 @@
         },
         "method": "GET",
         "header": [],
+
         "url": {
           "raw": "http://127.0.0.1:8000/api/propertyforuser/1",
           "protocol": "http",
@@ -358,6 +379,7 @@
         }
       },
       "response": []
+
     }
   ]
 }

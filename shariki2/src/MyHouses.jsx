@@ -6,6 +6,8 @@ function MyHouses({ userId }) {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [propertyDetails, setPropertyDetails] = useState(null);
   const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   // -----------------------------
   // 1) API: عقارات المستخدم
@@ -13,8 +15,17 @@ function MyHouses({ userId }) {
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/propertiesforuser?userId=${userId}`)
       .then(res => res.json())
-      .then(data => setProperties(data))
-      .catch(err => console.log("Error loading properties:", err));
+// <<<<<<< HEAD
+//       .then(data => setProperties(data))
+//       .catch(err => console.log("Error loading properties:", err));
+      .then((data) => {
+        setProperties(data.properties || []); 
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching properties:", err);
+        setLoading(false);
+      });
   }, [userId]);
 
 
@@ -28,15 +39,34 @@ function MyHouses({ userId }) {
     // تفاصيل العقار
     fetch(`http://127.0.0.1:8000/api/propertyforuser/${propertyId}`)
       .then(res => res.json())
-      .then(data => setPropertyDetails(data))
-      .catch(err => console.log("Error loading property details:", err));
+  //     .then(data => setPropertyDetails(data))
+  //     .catch(err => console.log("Error loading property details:", err));
 
+  //   // الحصص الخاصة بالمستخدم لهذا العقار
+  //   fetch(`http://127.0.0.1:8000/api/myShares?userId=${userId}&propertyId=${propertyId}`)
+  //     .then(res => res.json())
+  //     .then(data => setSessions(data))
+  //     .catch(err => console.log("Error loading sessions:", err));
+  // };
+      .then((data) => {
+        setPropertyDetails(data); 
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching properties:", err);
+        setLoading(false);
+      });
     // الحصص الخاصة بالمستخدم لهذا العقار
     fetch(`http://127.0.0.1:8000/api/myShares?userId=${userId}&propertyId=${propertyId}`)
       .then(res => res.json())
-      .then(data => setSessions(data))
-      .catch(err => console.log("Error loading sessions:", err));
-  };
+      .then((data) => {
+        setSessions(data); 
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching properties:", err);
+        setLoading(false);
+      });  };
 
 
   return (

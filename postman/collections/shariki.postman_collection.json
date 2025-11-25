@@ -2,8 +2,7 @@
   "info": {
     "_postman_id": "7b2d8dbe-9afd-42eb-b730-2da806ca14d1",
     "name": "shariki",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "49116550"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -36,17 +35,17 @@
             "register"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "request",
       "id": "b5d54e7f-bf6c-41c5-8a3f-14ea056cfaa0",
       "request": {
         "method": "GET",
-        "header": []
-      },
-      "response": []
+        "url": {
+          "raw": ""
+        }
+      }
     },
     {
       "name": "login",
@@ -67,7 +66,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"test@example.com\",\r\n  \"password\": \"12345678\"\r\n}\r\n"
+          "raw": "{\r\n  \"email\": \"rew@a.com\",\r\n  \"password\": \"rrrrrrrr\"\r\n}\r\n"
         },
         "url": {
           "raw": "{{api_url}}/login",
@@ -85,8 +84,7 @@
             }
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "request",
@@ -131,8 +129,7 @@
             }
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "allRequests",
@@ -161,8 +158,7 @@
             "requests"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "updateRequest",
@@ -208,8 +204,7 @@
             "status"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "uploadContract",
@@ -250,8 +245,7 @@
             "contract"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "index",
@@ -287,8 +281,7 @@
             }
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "cancel",
@@ -319,8 +312,7 @@
             "cancel"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "store Property",
@@ -362,8 +354,7 @@
             "properties"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "aprove property",
@@ -378,7 +369,7 @@
           },
           {
             "key": "Authorization",
-            "value": " Bearer 3|yZ3D6xTzLFWyt3crhmp1K2NRA2YomGbJ3hjVi2a5b9133818",
+            "value": " Bearer 3|JxgnSKNxkk8sWjXwtmMX9RYJXtjqvLYyFRIGCncuae1d1b71",
             "type": "text"
           }
         ],
@@ -394,8 +385,7 @@
             "approve"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "loginAdmin",
@@ -427,8 +417,7 @@
             "login"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "propertysell",
@@ -464,8 +453,7 @@
             }
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "propertyDetails",
@@ -495,8 +483,7 @@
             "1"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "myShares",
@@ -525,8 +512,7 @@
             "myShares"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "shareDetails",
@@ -556,8 +542,7 @@
             "1"
           ]
         }
-      },
-      "response": []
+      }
     },
     {
       "name": "allShares",
@@ -586,8 +571,32 @@
             "allShares"
           ]
         }
-      },
-      "response": []
+      }
+    },
+    {
+      "name": "{{api_url}}/logout",
+      "id": "299d0be6-a341-4c2e-86a6-e06bad444ce0",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api_url}}/logout",
+          "host": [
+            "{{api_url}}"
+          ],
+          "path": [
+            "logout"
+          ]
+        }
+      }
     }
   ]
 }
