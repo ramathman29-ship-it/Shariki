@@ -10,6 +10,7 @@ class Kernel extends HttpKernel
      * The application's global HTTP middleware stack.
      */
     protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\HandleCors::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
@@ -26,7 +27,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // مهم لمصادقة Sanctum
+            \Illuminate\Foundation\Http\Middleware\HandleCors::class, // 👈 مهم جداً
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -36,9 +37,8 @@ class Kernel extends HttpKernel
     /**
      * The application's route middleware.
      */
-   protected $routeMiddleware = [
-    'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-    'admin' => \App\Http\Middleware\AdminMiddleware::class,
-];
-
+    protected $routeMiddleware = [
+        'auth:sanctum' => \App\Http\Middleware\Authenticate::class, // 👈 تصحيح
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+    ];
 }

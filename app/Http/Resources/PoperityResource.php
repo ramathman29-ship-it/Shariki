@@ -21,12 +21,9 @@ class PoperityResource extends JsonResource
             'type' => $this->type,
             'available_percentage' => $this->available_percentage,
             'type_request' => $this->typerequest?->name,  
-            'images' => $this->photos->map(fn($img) => asset('storage/' . $img->path)),
-            'suffixes' => $this->suffixes->map(fn($suff) => [
-                'title' => $suff->title,
-                'description' => $suff->description,
-            ]),
-            
+               
         ];
+            
+        
     }
 }

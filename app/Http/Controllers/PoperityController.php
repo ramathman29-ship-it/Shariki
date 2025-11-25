@@ -21,7 +21,7 @@ class PoperityController extends Controller
         $this->middleware('auth:sanctum')->except(['index', 'show']);
     }
 
-    /**
+    /*
      * عرض جميع العقارات الموافق عليها فقط
      */
     public function index(Request $request)
@@ -96,7 +96,7 @@ class PoperityController extends Controller
 
 
 
-    /**
+    /*
      * إنشاء عقار جديد
      */
     public function store(StorePoperityRequest $request)
@@ -140,8 +140,7 @@ class PoperityController extends Controller
             'property' => new PoperityResource($property)
         ], 201);
     }
-
-    /**
+    /*
      * عرض عقار واحد
      */
     public function shownotapprove(Poperity $poperity)
@@ -212,7 +211,7 @@ class PoperityController extends Controller
 
 
 
-    /**
+    /*
      * تحديث عقار
      */
     public function update(UpdatePoperityRequest $request, Poperity $poperity)
@@ -233,7 +232,7 @@ class PoperityController extends Controller
         ]);
     }
 
-    /**
+    /*
      * حذف عقار
      */
     public function destroy(Poperity $poperity)
@@ -248,7 +247,7 @@ class PoperityController extends Controller
         ]);
     }
 
-    /**
+    /*
      * موافقة الأدمن على العقار
    
     */
@@ -282,7 +281,7 @@ public function approve($id)
 }
 
 
-    /**
+    /*
      * تخزين الصور المرتبطة بالعقار
      */
     private function storeImages(Poperity $property, array $images)
@@ -296,7 +295,7 @@ public function approve($id)
         }
     }
 
-    /**
+    /*
      * تخزين اللواحق المرتبطة بالعقار
      */
     private function storeSuffixe(Poperity $property, array $suffixes)
@@ -308,8 +307,7 @@ public function approve($id)
             ]);
         }
     }
-
-    /**
+    /*
      * تطبيق الفلترة العامة على الاستعلام
      */
     private function applyFilters($query, Request $request)
@@ -323,7 +321,7 @@ public function approve($id)
     }
    
 
-    /**
+    /*
      * تحديث حالة العقار بناءً على الموافقة ونسبة الإنجاز
      */
     private function updateStatus(Poperity $property)
@@ -339,4 +337,3 @@ public function approve($id)
         $property->save();
     }
 }
-

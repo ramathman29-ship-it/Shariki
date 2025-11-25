@@ -4,7 +4,8 @@
   },
   "entities": {
     "collections": [
-      "..\\postman\\collections\\shariki.postman_collection.json"
+      "..\\postman\\collections\\shariki.postman_collection.json",
+      "..\\postman\\collections\\My Collection.postman_collection.json"
     ],
     "environments": [
       "..\\postman\\environments\\local Development.postman_environment.json"

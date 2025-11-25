@@ -1,0 +1,187 @@
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.15;
+}
+img {
+  max-width: 100%;
+  transition: 0.3s;
+}
+
+.container {
+  max-width: 1300px;
+  margin: auto;
+  justify-content: center;
+}
+
+/* Header */
+
+.header nav ul {
+  list-style: none;
+  gap: 20px;
+}
+.header nav ul li a {
+  text-decoration: none;
+  color: black;
+  transition: 0.3s;
+}
+
+.landing1{
+  color: #0c0c0c;
+  font-size: 70px;
+  font-weight: bold;
+}
+
+.landing {
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  height: calc(100vh - 64px);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.landing .intro-text {
+  text-align: center;
+}
+.landing .intro-text h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+.landing .intro-text p {
+  font-size: 19px;
+  line-height: 1.8;
+  margin: auto;
+}
+.landing{
+    background-size: cover;
+    background-attachment: fixed;
+    background-image: url(./Images/101.jfif);
+    height: calc(100vh - 64px);
+    position: relative;
+}
+.landing-logo {
+  position: absolute;
+  top: 20px; 
+  left: 20px; 
+  width: 152px; 
+  z-index: 10; 
+}
+@media (max-width:768px) {
+  .landing h1{
+    font-size:41px ;
+  }
+  
+}
+
+/* Features */
+
+.features .feat {
+  text-align: center;
+}
+.features .feat h3 {
+  font-weight: 800;
+}
+.features .feat p {
+  color: #777;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+
+/* Portfolio */
+#portfolio .row {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+}
+#portfolio img {
+  border-radius: 10px;
+}
+.portfolio .card img {
+  width: 100%;
+  display: block;
+}
+
+.portfolio-title {
+  font-size: 70px;
+  font-weight: bold;
+    color:#543f00c2 ;
+  letter-spacing: 4px; 
+}
+@media (max-width:768px) {
+  .portfolio-title h1
+  {
+    font-size: 30px;
+  }
+}
+#protofilo .row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.portfolio-sub {
+  letter-spacing: 12px;
+  font-size: 14px;
+  color: #555;
+  /* margin-top: -10px; */
+}
+
+/* About */
+.about-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+.about-content .image {
+  position: relative;
+}
+.about-content .text {
+  flex: 1;
+}
+@media (max-width: 991px) {
+  .about-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .about-content .image {
+    margin: auto 0 60px;
+  }
+}
+.portfolio-section {
+  background-color: #f6f6f6; 
+}
+
+.portfolio-card {
+  background: #fff;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.portfolio-card p {
+  color:#746431;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: bold;
+}
+
+/* Footer */
+.foter {
+  background-color: #746431;
+  color: #DDD;
+  text-align: center;
+}
+.foter span {
+  background-color: #746431;
+  font-weight: bold;
+}
+
+
+
