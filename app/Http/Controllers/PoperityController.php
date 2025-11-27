@@ -68,9 +68,10 @@ class PoperityController extends Controller
 
     public function indexUser(Request $request)
     {
-        $query = Poperity::with('photos', 'typerequest');
-
         $user = Auth::user();
+        $query = Poperity::with('photos', 'typerequest') ->where('user_id', $user->id);;
+
+        
 
         if (!$user) {
             return response()->json([
@@ -183,31 +184,35 @@ class PoperityController extends Controller
     }
 
 
-    /**عرض تفاصيل عقار للمالك */
-  public function showUser(Poperity $poperity)
-    {
-        
-           
-        
+  /** عرض تفاصيل عقار للمالك */
+public function showUser(Poperity $poperity)
+{
+    $user = Auth::user();
 
-        $user = Auth::user();
-
-        if (!$user) {
-            
-        
-            return response()->json([
-                'success' => false,
-                'message' => 'هذا العقار بانتظار موافقة الإدارة'
-            ], 403);
-        }
-
-        $poperity->load('photos', 'typerequest', 'suffixes');
-
+    if (!$user) {
         return response()->json([
-            'success' => true,
-            'property' => new PoperityResource($poperity)
-        ]);
+            'success' => false, 
+            'message' => 'Unauthorized'
+        ], 403);
     }
+
+    // تحقق أن العقار يعود للمستخدم الحالي
+    if ($poperity->user_id !== $user->id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You are not authorized to view this property'
+        ], 403);
+    }
+
+    // جلب التفاصيل مع العلاقات
+    $property = Poperity::with('photos', 'typerequest')
+                        ->find($poperity->id);
+
+    return response()->json([
+        'success' => true,
+        'property' => new PoperityResource($property)
+    ]);
+}
 
 
 
