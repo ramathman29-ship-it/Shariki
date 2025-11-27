@@ -104,7 +104,7 @@ public function profile(Request $request)
         'personal_id' =>$user->personal_id,
         'gender' =>$user->gender,
         'birthday' => $user->birthday,
-        'mobile1' => $user->mobile,
+        'mobile' => $user->mobile1,
         'nationality' =>$user->nationality,
         'job' => $user->job,
         'residency' =>$user->residency,
