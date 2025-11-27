@@ -14,7 +14,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import SellRequest from "./SellRequest"; // طلبات الشراء
 import PublishRequest from "./PublishRequest"; // طلبات النشر
 import "./App.css";
-import Logout from "./Logout";
 
 export default function App() {
   return (
@@ -25,8 +24,6 @@ export default function App() {
 
 
         <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-
         <Route path="//houses" element={<Houses />} />
         <Route path="/house/:id" element={<HouseDetails />} />
 

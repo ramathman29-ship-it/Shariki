@@ -208,13 +208,19 @@ class RequestController extends Controller
                 $req->update(['status' => 'rejected']);
             }
         }
+        if($requestItem->rate==100)
+        {
+            $property->update(['user_id'=>$requestItem->user_id]);
+        }
+           else{
             Investment::create([
-            'user_id'   => $requestItem->user_id,
-            'prp_id'    => $requestItem->prp_id,
-            'rate'      => $requestItem->rate,
-            'contract'  => $path,
-            'submission_date' => now()->toDateString(),
-            ]);
+                'user_id'   => $requestItem->user_id,
+                'prp_id'    => $requestItem->prp_id,
+                'rate'      => $requestItem->rate,
+                'contract'  => $path,
+                'submission_date' => now()->toDateString(),
+                ]);
+           }
 
             $requestItem->delete();
            

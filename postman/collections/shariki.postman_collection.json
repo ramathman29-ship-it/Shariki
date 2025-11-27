@@ -597,6 +597,23 @@
           ]
         }
       }
+    },
+    {
+      "name": "profile",
+      "id": "75464f94-6bc2-421a-9a5a-92524dc7c57f",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": ""
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "373b3ae3-62b6-4804-8f6e-ee99ed4b28af",
+      "key": "{{api_url}}",
+      "value": ""
     }
   ]
 }

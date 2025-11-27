@@ -60,7 +60,7 @@ export default function Login() {
         body: JSON.stringify(loginData),
       });
 
-      const data = await res.json();
+      const data = await res.json();  
       console.log("Login response:", data);
 
       if (!res.ok) throw new Error(data.message || "Login failed");

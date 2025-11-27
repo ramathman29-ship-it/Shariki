@@ -92,6 +92,26 @@ return response()->json([
     'message' => 'logout' , 200]);
 } 
 
+public function profile(Request $request)
+{
+    $user = $request->user(); 
+
+    return response()->json([
+        'success' => true,
+        'name' => $user->name,
+        'email' =>$user->email,
+        'password' => $user->password,
+        'personal_id' =>$user->personal_id,
+        'gender' =>$user->gender,
+        'birthday' => $user->birthday,
+        'mobile1' => $user->mobile,
+        'nationality' =>$user->nationality,
+        'job' => $user->job,
+        'residency' =>$user->residency,
+        'budget' =>$user->budget,
+    ], 200);
+}
+
 }
 
 

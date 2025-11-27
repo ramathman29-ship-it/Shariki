@@ -89,5 +89,4 @@ class InvestmentController extends Controller
             'data' => new InvestmentResource($investment)
         ]);
     }
-
 }

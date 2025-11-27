@@ -19,7 +19,6 @@ Route::post('role',[RoleController::class,'store']);
 Route::get('role/{id}/user',[RoleController::class,'show']);
 Route::post('register',[Userscontroller::class,'register']);
 Route::post('login',[Userscontroller::class,'login']);
-
 Route::get('/propertiesall', [PoperityController::class, 'index']);
 Route::get('/propertiesall/{poperity}', [PoperityController::class, 'show']);
 
@@ -56,6 +55,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
 Route::prefix('user')->group(function () {
     Route::delete('/requests/{id}/cancel', [RequestController::class, 'cancel']);
+    Route::get('profile',[Userscontroller::class ,'profile']);
 
     Route::post('/requests', [RequestController::class, 'store']);
 
@@ -70,7 +70,7 @@ Route::prefix('user')->group(function () {
 }); 
 
 Route::prefix('admin')->group(function () {
-
+    
     Route::get('/requests', [RequestController::class, 'index']);
     Route::get('/requests/{id}', [RequestController::class, 'show']);
     Route::post('/requests/{id}/contract', [RequestController::class, 'uploadContract']);

@@ -14,10 +14,11 @@ class InvestmentResource extends JsonResource
             'share_amount' => $this->rate,
             'contract'=>$this->contract,
             'property' => $this->prp_id,
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-            ],
+            'submission date'=>$this->submission_date,
+            // 'user' => [
+            //     'id' => $this->user->id,
+            //     'name' => $this->user->name,
+            // ],
            
         ];
     }

@@ -1,89 +1,103 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 
-function MyHouses({ userId }) {
+function MyHouses() {
+
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
-  const [propertyDetails, setPropertyDetails] = useState(null);
-  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [shares, setShares] = useState([]);
+  const [selectedShare, setSelectedShare] = useState(null);
 
-
-  // -----------------------------
-  // 1) API: عقارات المستخدم
-  // -----------------------------
+  const token = localStorage.getItem("token"); 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/propertiesforuser?userId=${userId}`)
+    fetch("http://127.0.0.1:8000/api/propertiesforuser", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
       .then(res => res.json())
-// <<<<<<< HEAD
-//       .then(data => setProperties(data))
-//       .catch(err => console.log("Error loading properties:", err));
-      .then((data) => {
+      .then(data => {
         setProperties(data.properties || []); 
-        setLoading(false);
+         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Error fetching properties:", err);
+      .catch(err => {
+        console.error("Error:", err);
         setLoading(false);
       });
-  }, [userId]);
+  }, []);
 
-
-  // -----------------------------
-  // 2) API: تفاصيل العقار + 3) API الحصص
-  // -----------------------------
-  const handleSelectProperty = (propertyId) => {
-
-    setSelectedProperty(propertyId);
-
-    // تفاصيل العقار
-    fetch(`http://127.0.0.1:8000/api/propertyforuser/${propertyId}`)
+  const fetchPropertyDetails = (propertyId) => {
+    fetch(`http://127.0.0.1:8000/api/propertyforuser/${propertyId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
       .then(res => res.json())
-  //     .then(data => setPropertyDetails(data))
-  //     .catch(err => console.log("Error loading property details:", err));
-
-  //   // الحصص الخاصة بالمستخدم لهذا العقار
-  //   fetch(`http://127.0.0.1:8000/api/myShares?userId=${userId}&propertyId=${propertyId}`)
-  //     .then(res => res.json())
-  //     .then(data => setSessions(data))
-  //     .catch(err => console.log("Error loading sessions:", err));
-  // };
-      .then((data) => {
-        setPropertyDetails(data); 
-        setLoading(false);
+      .then(data => {
+        console.log("تفاصيل العقار:", data);
+        setSelectedProperty(data);
       })
-      .catch((err) => {
-        console.error("Error fetching properties:", err);
+      .catch(err => console.error("Error:", err));
+     
+  };
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/user/myShares", {
+    headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setShares(data.shares || []); 
+         setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error:", err);
         setLoading(false);
       });
-    // الحصص الخاصة بالمستخدم لهذا العقار
-    fetch(`http://127.0.0.1:8000/api/myShares?userId=${userId}&propertyId=${propertyId}`)
-      .then(res => res.json())
-      .then((data) => {
-        setSessions(data); 
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching properties:", err);
-        setLoading(false);
-      });  };
+  }, []);
 
+
+  const fetchShareDetails = (shareId) => {
+    fetch(`http://127.0.0.1:8000/api/user/myShares/${shareId}`, {
+    headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("تفاصيل الحصص:", data);
+        setSelectedShare(data);
+      })
+      .catch(err => console.error("Error:", err));
+  };
+  
+
+  if (loading) return <p>جاري التحميل...</p>;
 
   return (
     <Container className="mt-4">
 
-      
-      <h3 className="mb-3">عقاراتك</h3>
+      <h3 className="mb-3">عقاراتي</h3>
+
       <Row>
         {properties.map((prop) => (
           <Col md={4} key={prop.id} className="mb-3">
             <Card className="shadow-sm">
               <Card.Body>
-                <Card.Title>{prop.name}</Card.Title>
+                <Card.Title>{prop.address}</Card.Title>
                 <Card.Text>الموقع: {prop.location}</Card.Text>
 
-                <Button variant="primary"
-                  onClick={() => handleSelectProperty(prop.id)}>
+                <Button
+                  variant="primary"
+                  onClick={() => fetchPropertyDetails(prop.id)}
+                >
                   عرض التفاصيل
                 </Button>
               </Card.Body>
@@ -92,37 +106,48 @@ function MyHouses({ userId }) {
         ))}
       </Row>
 
+      {/* PROPERTY DETAILS + SHARES */}
+      {selectedProperty && (
+        <Card className="p-3 mt-4 shadow">
+          <h4>تفاصيل العقار</h4>
 
-      
-      {propertyDetails && (
-        <>
-          <h3 className="mt-5">تفاصيل العقار</h3>
+          <p><strong>العنوان:</strong> {selectedProperty.address}</p>
+          <p><strong>الموقع:</strong> {selectedProperty.location}</p>
+          <p><strong>السعر:</strong> {selectedProperty.price}</p>
+          <p><strong>الحالة:</strong> {selectedProperty.status}</p>
+          <p><strong>النسبة المتاحة:</strong> {selectedProperty.available_percentage}%</p>
 
-          <Card className="p-3 shadow-sm mb-3">
-            <h5>الاسم: {propertyDetails.name}</h5>
-            <p>السعر: {propertyDetails.price}</p>
-            <p>الوصف: {propertyDetails.description}</p>
-          </Card>
-        </>
-      )}
+          <h5 className="mt-4">الحصص </h5>
+          {shares.length === 0 ? (
+            <p className="text-muted">لا يوجد حصص لهذا العقار.</p>
+          ) : (
+            <ListGroup>
+              {shares.map((share) => (
+                <ListGroup.Item key={share.id} className="d-flex justify-content-between align-items-center">
+                  <span>{share.name} — {share.value}</span>
 
-
-     
-      {sessions.length > 0 && (
-        <>
-          <h3 className="mt-4">الحصص الخاصة بهذا العقار</h3>
-          <Row>
-            {sessions.map((session) => (
-              <Col md={4} key={session.id}>
-                <Card className="shadow-sm p-3 mb-3">
-                  <h6>النوع: {session.type}</h6>
-                  <p>التاريخ: {session.date}</p>
-                  <p>المدة: {session.duration} ساعة</p>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </>
+                  <Button
+                    variant="success"
+                    size="sm"
+                    onClick={() => fetchShareDetails(share.id)}
+                  >
+                    عرض تفاصيل الحصة
+                  </Button>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+                      )}
+                      {/* SHARE DETAILS */}
+          {selectedShare && (
+            <Card className="p-3 mt-3">
+              <h5>تفاصيل الحصة</h5>
+              <p><strong>الاسهم:</strong> {selectedShare.share_amount}</p>
+              {/* <p><strong>القيمة:</strong> {selectedShare.value}</p> */}
+              {/* <p><strong>النسبة:</strong> {selectedShare.percentage}%</p> */}
+              {/* <p><strong>التاريخ:</strong> {selectedShare.date}</p> */}
+            </Card>
+          )}
+        </Card>
       )}
 
     </Container>
