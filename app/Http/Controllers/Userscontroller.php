@@ -100,7 +100,6 @@ public function profile(Request $request)
         'success' => true,
         'name' => $user->name,
         'email' =>$user->email,
-        'password' => $user->password,
         'personal_id' =>$user->personal_id,
         'gender' =>$user->gender,
         'birthday' => $user->birthday,
@@ -113,5 +112,4 @@ public function profile(Request $request)
 }
 
 }
-
 
