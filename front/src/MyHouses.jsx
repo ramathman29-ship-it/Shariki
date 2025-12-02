@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, ListGroup } from "react-bootstrap";
 
 function MyHouses() {
 
@@ -9,7 +9,7 @@ function MyHouses() {
   const [shares, setShares] = useState([]);
   const [selectedShare, setSelectedShare] = useState(null);
 
-  const token = localStorage.getItem("token"); 
+  const token = localStorage.getItem("token");
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/propertiesforuser", {
       headers: {
@@ -19,8 +19,8 @@ function MyHouses() {
     })
       .then(res => res.json())
       .then(data => {
-        setProperties(data.properties || []); 
-         setLoading(false);
+        setProperties(data.properties || []);
+        setLoading(false);
       })
       .catch(err => {
         console.error("Error:", err);
@@ -38,23 +38,23 @@ function MyHouses() {
       .then(res => res.json())
       .then(data => {
         console.log("تفاصيل العقار:", data);
-        setSelectedProperty(data);
+        setSelectedProperty(data.property);
       })
       .catch(err => console.error("Error:", err));
-     
+
   };
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/user/myShares", {
-    headers: {
+      headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     })
       .then(res => res.json())
       .then(data => {
-        setShares(data.shares || []); 
-         setLoading(false);
+        setShares(data.shares || []);
+        setLoading(false);
       })
       .catch(err => {
         console.error("Error:", err);
@@ -65,7 +65,7 @@ function MyHouses() {
 
   const fetchShareDetails = (shareId) => {
     fetch(`http://127.0.0.1:8000/api/user/myShares/${shareId}`, {
-    headers: {
+      headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
@@ -73,11 +73,11 @@ function MyHouses() {
       .then(res => res.json())
       .then(data => {
         console.log("تفاصيل الحصص:", data);
-        setSelectedShare(data);
+        setSelectedShare(data.share);
       })
       .catch(err => console.error("Error:", err));
   };
-  
+
 
   if (loading) return <p>جاري التحميل...</p>;
 
@@ -92,7 +92,7 @@ function MyHouses() {
             <Card className="shadow-sm">
               <Card.Body>
                 <Card.Title>{prop.address}</Card.Title>
-                <Card.Text>الموقع: {prop.location}</Card.Text>
+                <Card.Text>الموقع {prop.location}</Card.Text>
 
                 <Button
                   variant="primary"
@@ -111,11 +111,11 @@ function MyHouses() {
         <Card className="p-3 mt-4 shadow">
           <h4>تفاصيل العقار</h4>
 
-          <p><strong>العنوان:</strong> {selectedProperty.address}</p>
-          <p><strong>الموقع:</strong> {selectedProperty.location}</p>
-          <p><strong>السعر:</strong> {selectedProperty.price}</p>
-          <p><strong>الحالة:</strong> {selectedProperty.status}</p>
-          <p><strong>النسبة المتاحة:</strong> {selectedProperty.available_percentage}%</p>
+          <p><strong>العنوان</strong> {selectedProperty.address}</p>
+          <p><strong>الموقع</strong> {selectedProperty.location}</p>
+          <p><strong>السعر</strong> {selectedProperty.price}</p>
+          <p><strong>الحالة</strong> {selectedProperty.status}</p>
+          <p><strong>النسبة المتاحة</strong> {selectedProperty.available_percentage}%</p>
 
           <h5 className="mt-4">الحصص </h5>
           {shares.length === 0 ? (
@@ -124,7 +124,9 @@ function MyHouses() {
             <ListGroup>
               {shares.map((share) => (
                 <ListGroup.Item key={share.id} className="d-flex justify-content-between align-items-center">
-                  <span>{share.name} — {share.value}</span>
+                  <span>
+                    عدد الأسهم: {share.share_amount} — رقم العقار: {share.property}
+                  </span>
 
                   <Button
                     variant="success"
@@ -136,16 +138,19 @@ function MyHouses() {
                 </ListGroup.Item>
               ))}
             </ListGroup>
-                      )}
-                      {/* SHARE DETAILS */}
+
+          )}
+          {/* SHARE DETAILS */}
           {selectedShare && (
             <Card className="p-3 mt-3">
               <h5>تفاصيل الحصة</h5>
-              <p><strong>الاسهم:</strong> {selectedShare.share_amount}</p>
-              {/* <p><strong>القيمة:</strong> {selectedShare.value}</p> */}
-              {/* <p><strong>النسبة:</strong> {selectedShare.percentage}%</p> */}
-              {/* <p><strong>التاريخ:</strong> {selectedShare.date}</p> */}
+
+              <p><strong>عدد الأسهم:</strong> {selectedShare.share_amount}</p>
+              <p><strong>العقد:</strong> {selectedShare.contract}</p>
+              <p><strong>العقار:</strong> {selectedShare.property}</p>
+              <p><strong>تاريخ التقديم:</strong> {selectedShare["submission date"]}</p>
             </Card>
+
           )}
         </Card>
       )}
