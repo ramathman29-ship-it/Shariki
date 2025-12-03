@@ -30,7 +30,11 @@ class StoreUserRequest extends FormRequest
     'password' => 'required|string|min:8|confirmed',
     'personal_id' => 'required|integer',
     'gender' => 'required|string|max:20',
-    'birthday' => 'required|date',
+    'birthday' => [
+        'required',
+        'date',
+        'before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
+    ],
     'mobile1' => 'required|string|max:15',
     'nationality' => 'required|string|max:20',
     'job' => 'required|string|max:50',
