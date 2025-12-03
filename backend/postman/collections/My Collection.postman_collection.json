@@ -1,0 +1,385 @@
+{
+  "info": {
+    "_postman_id": "ab14e7ff-5e57-42ea-ab7c-d9dd8e3cb2c7",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49116550"
+
+  },
+  "item": [
+    {
+      "name": "log in admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "id": "f3c7c46e-dc2d-4a61-a756-6524049fe461"
+          }
+        }
+      ],
+      "id": "3ad69176-85b9-40a8-8e86-4978d5d5ace8",
+      "request": {
+        "method": "POST",
+        "header": [],
+
+        "url": {
+          "raw": "127.0.0.1:8000/api/login?name=Admin&email=admin@example.com&password=Admin1234",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "login"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "Admin"
+            },
+            {
+              "key": "email",
+              "value": "admin@example.com"
+            },
+            {
+              "key": "password",
+              "value": "Admin1234"
+            }
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+
+    },
+    {
+      "name": "Post data",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Successful POST request\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              ""
+            ],
+            "id": "ad375cb9-590e-4977-a4d0-c0a113f08b6c"
+          }
+        }
+      ],
+      "id": "de97e54d-da8d-49ec-aca1-f28fe9453245",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": ""
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+
+    },
+    {
+      "name": "approve",
+      "id": "4309ab55-6b3a-4843-ad20-534e1309f89b",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "add property",
+      "id": "3692f615-0807-4bdc-acda-82accfee9abc",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "register",
+      "id": "754d4312-8ae7-4e71-a270-3715faed6143",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "login user",
+      "id": "22c6175d-54bc-4797-991d-ca4dcf32e229",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "update",
+      "id": "fcf51a46-5a69-45a0-b625-d4a0a94a730f",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "shownotapprove",
+      "id": "d5ff228e-5936-4316-959a-dd4bf2ef1022",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "show",
+      "id": "f6186753-404f-4085-a3aa-be1039e3ba58",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "index",
+      "id": "268556ee-b04a-4134-a139-5d653200b016",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "indexnotapprove",
+      "id": "340b07e4-a076-4c02-bc3f-8c01b9dc66c1",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "delete",
+      "id": "550fd132-4a16-4b76-a8cb-c20c737d1e68",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "9|1pMAqopeFuG2eL9bvVxAFkkQJ1RyT6CwQnuXz1vhf61524dc",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/properties/5",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "properties",
+            "5"
+          ]
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "index for user",
+      "id": "4e55523c-169e-4d9d-a604-7cfda2405bc2",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "2|DcGEkMIcE64qfva1VduTaV6pL1b40Po7QULE3S4c52a47a7e",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/propertiesforuser",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "propertiesforuser"
+          ]
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "New Request",
+      "id": "41d68a45-71aa-43fc-9274-5dc14271ab38",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "2|ZsS5Dxih8jrGwkksXhYINfcfk4Vkt6Ed8wwXoebQ17dda0e9",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "images[]",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "images[]",
+              "type": "file",
+              "src": []
+
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/upload-images",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "upload-images"
+          ]
+        }
+      },
+      "response": []
+
+    },
+    {
+      "name": "show for user",
+      "id": "5974e63a-3f0d-4a09-92f9-9da2d334f838",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "2|DcGEkMIcE64qfva1VduTaV6pL1b40Po7QULE3S4c52a47a7e",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/propertyforuser/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "propertyforuser",
+            "1"
+          ]
+        }
+      },
+      "response": []
+
+    }
+  ]
+}
