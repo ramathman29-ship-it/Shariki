@@ -193,9 +193,22 @@ class RequestController extends Controller
       
             $property->available_percentage -= $requestItem->rate;
             if ($property->available_percentage == 0) {
-                $property->typeRequest->update([
-                    'name' => 'rate'
-                ]);
+            if( $property->typeRequest->name === 'partialSell')
+                {
+                    $property->typeRequest->update([
+                        'name' => 'Rent'
+                    ]);
+                    $property->update([
+                        'user_id'=>1 ,
+                     'available_percentage'=>100
+                    ]);
+                }
+                else if( $property->typeRequest->name === 'fullSell'){
+                    $property->typeRequest->update([
+                        'name' => 'Done'
+                    ]);
+                }
+                
             }
             $property->save();
             $otherRequests = RequestModel::where('prp_id', $property->id)
@@ -309,28 +322,28 @@ class RequestController extends Controller
    
     public function show($id)
     {
-    $requestItem = RequestModel::with(['poperitys', 'poperitys.user', 'user'])->find($id);
+        $requestItem = RequestModel::with(['poperitys', 'poperitys.user', 'user'])->find($id);
 
-    if (!$requestItem) {
+        if (!$requestItem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Request not found'
+            ], 404);
+        }
+
+        
+        if (Gate::denies('view', $requestItem)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Request not found'
-        ], 404);
+            'success' => true,
+            'data' => new RequestResource($requestItem)
+        ]);
     }
-
-    
-    if (Gate::denies('view', $requestItem)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized'
-        ], 403);
-    }
-
-    return response()->json([
-        'success' => true,
-        'data' => new RequestResource($requestItem)
-    ]);
-}
 
 
 }
