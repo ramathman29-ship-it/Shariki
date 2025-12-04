@@ -264,6 +264,7 @@ class RequestController extends Controller
                 ], 403);
         }
            $requests =RequestModel::with(['poperitys', 'user'])
+               ->where('status', 'accepted')
                ->latest()
                ->get();
 
