@@ -8,9 +8,7 @@ export default function PublishRequest() {
 
   const token = localStorage.getItem("token");
 
-  // ------------------------------------------------
-  // Fetch user requests from backend (READ ONLY)
-  // ------------------------------------------------
+  // Fetch user buy requests
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,46 +38,7 @@ export default function PublishRequest() {
     fetchData();
   }, [token]);
 
-  // ------------------------------------------------
-  // ACCEPT request → API موجود
-  // ------------------------------------------------
-  const acceptRequest = async (id) => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/admin/requests/${id}/accept`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          }
-        }
-      );
-
-      if (!response.ok) throw new Error("Accept failed");
-
-      // Remove from UI after acceptance
-      setRequests((prev) => prev.filter((r) => r.id !== id));
-
-      setMessage("✔️ Request accepted successfully.");
-    } catch (err) {
-      console.error(err);
-      setMessage("❌ Failed to accept request.");
-    }
-  };
-
-  // ------------------------------------------------
-  // REJECT request → بدون API
-  // ------------------------------------------------
-  const rejectRequest = (id) => {
-    // شيل العنصر من الواجهة فقط
-    setRequests((prev) => prev.filter((r) => r.id !== id));
-    setMessage("❌ Request removed from your screen.");
-  };
-
-  // ------------------------------------------------
-  // Upload contract after acceptance
-  // ------------------------------------------------
+  // Upload contract image after request is accepted
   const uploadContract = async (id, file) => {
     try {
       const formData = new FormData();
@@ -102,7 +61,7 @@ export default function PublishRequest() {
 
       setMessage("📄 Contract uploaded successfully!");
 
-      // Update UI with returned contract URL
+      // Update the UI with the returned contract URL
       setRequests((prev) =>
         prev.map((r) =>
           r.id === id ? { ...r, contract_image: data.contract_url } : r
@@ -119,7 +78,6 @@ export default function PublishRequest() {
   return (
     <div className="container mt-4">
       <h2 className="text-center mb-4">📬 Pending User Requests</h2>
-
       {message && <div className="alert alert-info text-center">{message}</div>}
 
       <div className="row">
@@ -135,13 +93,10 @@ export default function PublishRequest() {
                 >
                   <h6 className="text-muted">Property ID: {req.property}</h6>
                 </div>
-
                 <div className="card-body">
                   <h5 className="card-title">Requester: {req.user?.name}</h5>
-
                   <p><strong>Description:</strong> {req.description}</p>
                   <p><strong>Rate:</strong> {req.rate}%</p>
-
                   <p>
                     <strong>Status:</strong>{" "}
                     <span
@@ -157,39 +112,19 @@ export default function PublishRequest() {
                     </span>
                   </p>
 
-                  {/* ACCEPT button */}
-                  {req.status === "pending" && (
-                    <button
-                      className="btn btn-success w-100 mb-2"
-                      onClick={() => acceptRequest(req.id)}
-                    >
-                      Accept
-                    </button>
-                  )}
-
-                  {/* REJECT button (NO API) */}
-                  {req.status === "pending" && (
-                    <button
-                      className="btn btn-danger w-100 mb-2"
-                      onClick={() => rejectRequest(req.id)}
-                    >
-                      Reject
-                    </button>
-                  )}
-
                   {/* Show contract link if uploaded */}
                   {req.contract_image && (
                     <a
                       href={req.contract_image}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn btn-outline-primary btn-sm mt-2 w-100"
+                      className="btn btn-outline-primary btn-sm mt-2"
                     >
                       View Contract
                     </a>
                   )}
 
-                  {/* Upload contract only if accepted */}
+                  {/* Upload contract only if request is accepted */}
                   {req.status === "accepted" && (
                     <div className="mt-3">
                       <label className="form-label">Upload Contract:</label>

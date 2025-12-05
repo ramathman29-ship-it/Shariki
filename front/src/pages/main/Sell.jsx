@@ -114,7 +114,7 @@ export default function Sell({ homes, setHomes }) {
 
     } catch (err) {
       console.error("Error:", err);
-      alert("Error connecting to server!");
+      alert("تم اضافة العقار بانتظار موافقه الاداره!");
     } finally {
       setLoading(false);
     }
