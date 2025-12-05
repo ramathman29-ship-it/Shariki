@@ -16,7 +16,6 @@ export default function HouseDetails() {
     message: "",
   });
 
-  // 🟢 جلب تفاصيل العقار من الـ API
   useEffect(() => {
     const fetchHouseDetails = async () => {
       try {
@@ -42,17 +41,16 @@ export default function HouseDetails() {
     });
   };
 
-  // 🟢 إرسال الطلب للباك (مع تعديل prp_id)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const orderData = {
-      prp_id: house.id,             // هاد هو اسم الحقل الصحيح
+      prp_id: house.id,             
       description: formData.message,
     };
 
     try {
-      const token = localStorage.getItem("token"); // لو الباك محتاج Authorization
+      const token = localStorage.getItem("token"); 
       const response = await fetch("http://127.0.0.1:8000/api/user/requests", {
         method: "POST",
         headers: {

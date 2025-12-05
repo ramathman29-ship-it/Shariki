@@ -47,7 +47,7 @@ export default function Login() {
     };
   }, []);
 
-  // 🔹 تسجيل الدخول
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -65,7 +65,6 @@ export default function Login() {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // 🟢 التقاط التوكن (Token أو token)
       const token = data.token || data.Token;
       if (!token) {
         console.warn("⚠️ No token found in response!", data);
@@ -84,7 +83,6 @@ export default function Login() {
     }
   };
 
-  // 🔹 التسجيل مع تسجيل دخول تلقائي
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -106,7 +104,6 @@ export default function Login() {
         budget: registerData.budget,
       };
 
-      // 🟢 أولاً: إنشاء الحساب
       const res = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },

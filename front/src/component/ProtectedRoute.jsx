@@ -5,7 +5,6 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   if (!token) {
-    // إذا ما في توكن، رجع المستخدم على صفحة login مع تخزين الصفحة الأصلية
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 

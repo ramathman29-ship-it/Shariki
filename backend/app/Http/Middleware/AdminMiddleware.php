@@ -17,7 +17,6 @@ class AdminMiddleware
 
         $user->load('roles');
 
-        // تأكد من وجود اسم الدور "admin" بأي شكل (كبر/صغر حروف/فراغات)
         $isAdmin = $user->roles->pluck('name')
             ->map(fn($name) => strtolower(trim($name)))
             ->contains('admin');

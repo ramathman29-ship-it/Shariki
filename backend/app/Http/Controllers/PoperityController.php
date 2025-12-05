@@ -120,19 +120,11 @@ class PoperityController extends Controller
             $property->save();
         }
 
-        // تحديث الحالة تلقائيًا
         $this->updateStatus($property);
 
         $this->storeImages($property, $request->file('images', []));
         $this->storeSuffixe($property, $request->input('suffixes', []));
-         if ($request->filled('type_request')) {
-    $typeRequest = TypeRequest::create([
-        'name' => $request->type_request,
-    ]);
 
-    $property->RT_id = $typeRequest->id;
-    $property->save();
-}
 
         return response()->json([
             'success' => true,
@@ -165,8 +157,7 @@ class PoperityController extends Controller
     }
     public function show (Poperity $poperity){
          if (
-            !$poperity->is_approved 
-  ) {
+            !$poperity->is_approved  ) {
             return response()->json([
                 'success' => false,
                 'message' => 'هذا العقار بانتظار موافقة الإدارة'
@@ -195,7 +186,6 @@ public function showUser(Poperity $poperity)
         ], 403);
     }
 
-    // تحقق أن العقار يعود للمستخدم الحالي
     if ($poperity->user_id !== $user->id) {
         return response()->json([
             'success' => false,
@@ -203,7 +193,6 @@ public function showUser(Poperity $poperity)
         ], 403);
     }
 
-    // جلب التفاصيل مع العلاقات
     $property = Poperity::with('photos', 'typerequest')
                         ->find($poperity->id);
 
