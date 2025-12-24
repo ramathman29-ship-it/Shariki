@@ -11,7 +11,8 @@ use App\Http\Resources\PoperityResource;
 use App\Models\TypeRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
-
+use App\Notifications\GenericNotification;
+use App\Enums\NotificationType;
 class PoperityController extends Controller
 {
     public function __construct()
@@ -79,7 +80,15 @@ class PoperityController extends Controller
         $this->applyFilters($query, $request);
 
         $properties = $query->get();
+        $admins = User::all()->filter(fn($user) => $user->isAdmin());
 
+        foreach ($admins as $admin) {
+            $admin->notify(new GenericNotification(
+                "You have a new property wait your approve",
+                "/admin/propertiesظ{$property->id}", 
+                NotificationType::REQUEST_PENDING_APPROVAL
+            ));
+        }
         return response()->json([
             'count' => $properties->count(),
             'properties' => PoperityResource::collection($properties)
@@ -246,7 +255,12 @@ class PoperityController extends Controller
 
         // تحديث الحالة
         $this->updateStatus($property);
-
+        $propertyOwner= $property->user;
+        $propertyOwner->notify(new GenericNotification(
+            "Your property approved",
+            "/user/propertyforuser/{$property->id}", 
+            NotificationType::PROPERTY_APPROVED
+        ));
         return response()->json([
             'success' => true,
             'message' => 'تمت الموافقة على العقار'
@@ -326,7 +340,7 @@ public function notapprove($id)
     private function applyFilters($query, Request $request)
     {
         if ($request->filled('city')) $query->where('location', 'LIKE', '%' . $request->city . '%');
-        if ($request->filled('status')) $query->where('status', $request->status);
+        // if ($request->filled('status')) $query->where('status', $request->status);
         if ($request->filled('min_price')) $query->where('price', '>=', $request->min_price);
         if ($request->filled('max_price')) $query->where('price', '<=', $request->max_price);
         if ($request->filled('RT_id')) $query->where('RT_id', $request->RT_id);

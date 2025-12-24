@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\InvestmentResource;
-
+use Illuminate\Support\Facades\Storage;
 class InvestmentController extends Controller
 {
     public function myShares(): JsonResponse
@@ -89,4 +89,49 @@ class InvestmentController extends Controller
             'data' => new InvestmentResource($investment)
         ]);
     }
+    public function getContract($id): JsonResponse
+{
+    try {
+        $investment = Investment::find($id);
+
+        if (!$investment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Investment not found'
+            ], 404);
+        }
+
+        if (Gate::denies('view', $investment)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        if (!$investment->contract || !file_exists(storage_path('app/public/' . $investment->contract))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contract file not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'contract_url' => asset('storage/' . $investment->contract)
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching investment contract', [
+            'investment_id' => $id,
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong'
+        ], 500);
+    }
+}
+
+    
 }

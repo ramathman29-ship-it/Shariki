@@ -12,7 +12,8 @@ class Investment extends Model
  return $this->belongsTo(User::class);
 
 }
- public function poperitys(){
- return $this->belongsTo(Poperity::class);
+public function poperitys()
+{
+    return $this->belongsTo(Poperity::class, 'prp_id');
 }
 }

@@ -27,7 +27,10 @@ class StorePoperityRequest extends FormRequest
         'images' => 'nullable|array',  
         'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:4096',
             'type' => 'nullable|string|max:100',
+
 'type_request'=> 'required|string',            
+
+            
             'available_percentage' => 'required|numeric|min:0|max:100',
         ];
     }

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Http\Resources\PoperityResource;
 class InvestmentResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -12,14 +12,9 @@ class InvestmentResource extends JsonResource
         return [
             'id' => $this->id,
             'share_amount' => $this->rate,
-            'contract'=>$this->contract,
-            'property' => $this->prp_id,
+            'contract'=>asset('storage/' . $this->contract),
             'submission date'=>$this->submission_date,
-            // 'user' => [
-            //     'id' => $this->user->id,
-            //     'name' => $this->user->name,
-            // ],
-           
+            'property' => new PoperityResource($this->whenLoaded('poperitys')),
         ];
     }
 }

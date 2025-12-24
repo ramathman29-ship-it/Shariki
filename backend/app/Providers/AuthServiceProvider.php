@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Notifications\DatabaseNotification;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -16,6 +16,8 @@ class AuthServiceProvider extends ServiceProvider
     \App\Models\Poperity::class => \App\Policies\PoperityPolicy::class,
     \App\Models\Request::class=>\App\Policies\RequestPolicy::class,
     \App\Models\Investment::class => \App\Policies\InvestmentPolicy::class,
+    DatabaseNotification::class => \App\Policies\NotificationPolicy::class,
+
 
 ];
 
