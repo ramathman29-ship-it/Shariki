@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PoperityController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RequestController;
@@ -33,6 +34,7 @@ Route::get('/properties/{poperity}', [PoperityController::class, 'shownotapprove
     Route::get('logout',[Userscontroller::class,'logout']);
 Route::get('/propertiesforuser',[PoperityController::class, 'indexUser']);
 Route::get('/propertyforuser/{poperity}',[PoperityController::class, 'showUser']);
+Route::post('/pay', [PaymentController::class, 'createPayment']);
 });
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 

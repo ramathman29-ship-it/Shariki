@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('images', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->string("title")->nullable();
-             $table->string("image_path")->nullable();
-               $table->foreignId('poperity_id')->constrained('poperities')->cascadeOnDelete();
-
+            $table->string('massege');
+            $table->date('date');
+            $table->boolean('read_at')->nullable();
+            $table->string('URL');
+             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('images');
+        Schema::dropIfExists('notifications');
     }
 };

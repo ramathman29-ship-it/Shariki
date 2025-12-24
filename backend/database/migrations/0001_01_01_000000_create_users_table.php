@@ -26,6 +26,7 @@ return new class extends Migration
             $table->decimal('budget', 15, 2)->nullable();
             $table->string('verified_id')->nullable();
             $table->string('budget_verif')->nullable();
+            $table->string('stripe_account_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
