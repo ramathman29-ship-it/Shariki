@@ -35,7 +35,7 @@ class StoreUserRequest extends FormRequest
     'nationality' => 'required|string|max:20',
     'job' => 'required|string|max:50',
     'residency' => 'required|string|max:20',
-    'budget' => 'required|integer'
+    'budget' => 'required|integer|min:0'
 ];
 
     }
