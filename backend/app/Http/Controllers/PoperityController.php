@@ -80,15 +80,7 @@ class PoperityController extends Controller
         $this->applyFilters($query, $request);
 
         $properties = $query->get();
-        $admins = User::all()->filter(fn($user) => $user->isAdmin());
-
-        foreach ($admins as $admin) {
-            $admin->notify(new GenericNotification(
-                "You have a new property wait your approve",
-                "/admin/propertiesظ{$property->id}", 
-                NotificationType::REQUEST_PENDING_APPROVAL
-            ));
-        }
+       
         return response()->json([
             'count' => $properties->count(),
             'properties' => PoperityResource::collection($properties)
@@ -131,7 +123,15 @@ class PoperityController extends Controller
 
     // إعادة التحميل مع الصور
     $property->load('photos', 'typerequest', 'suffixes');
+    $admins = User::all()->filter(fn($user) => $user->isAdmin());
 
+    foreach ($admins as $admin) {
+        $admin->notify(new GenericNotification(
+            "You have a new property wait your approve",
+            "/admin/properties{$property->id}", 
+            NotificationType::REQUEST_PENDING_APPROVAL
+        ));
+    }
     return response()->json([
         'success' => true,
         'message' => 'تم إنشاء العقار بنجاح، بانتظار الموافقة',
