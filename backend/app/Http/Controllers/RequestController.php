@@ -59,7 +59,7 @@ class RequestController extends Controller
             ]);
             $propertyOwner = $property->user;
             if ($propertyOwner && $propertyOwner->id !== $user->id) {
-                $url = "/user/requests/{$submittedRequest->id}";
+                $url = "/user/requests";
                 $propertyOwner->notify(new GenericNotification(
                     "You have a new request for your property",
                     $url,
@@ -212,19 +212,15 @@ class RequestController extends Controller
 
             $property->available_percentage -= $requestItem->rate;
             if ($property->available_percentage == 0) {
-                if ($property->typeRequest->name === 'partialSell') {
+                if ($property->typeRequest->name === 'partialSell' && $requestItem->rate != 100) {
                     $property->typeRequest->update([
-                        'name' => 'Rent'
+                        'name' => 'rent'
                     ]);
                     $property->update([
                         'user_id' => 1,
                         'available_percentage' => 100
                     ]);
-                } else if ($property->typeRequest->name === 'fullSell') {
-                    $property->typeRequest->update([
-                        'name' => 'Done'
-                    ]);
-                }
+                } 
             }
             $property->save();
             $otherRequests = RequestModel::where('prp_id', $property->id)
@@ -239,6 +235,9 @@ class RequestController extends Controller
             }
             if ($requestItem->rate == 100) {
                 $property->update(['user_id' => $requestItem->user_id]);
+                $property->typeRequest->update([
+                    'name' => 'done'
+                ]);
             } else {
                 Investment::create([
                     'user_id'   => $requestItem->user_id,
@@ -253,18 +252,12 @@ class RequestController extends Controller
 
             $buyer->notify(new GenericNotification(
                 "The contract has been uploaded successfully",
-                "/contracts/{$requestItem->id}",
+                "/investments/{$requestItem->id}/contract",
                 NotificationType::CONTRACT_UPLOADED
             ));
 
 
-            if ($propertyOwner && $propertyOwner->id !== $buyer->id) {
-                $propertyOwner->notify(new GenericNotification(
-                    "A contract has been uploaded for your property",
-                    "/propertiesforuser",
-                    NotificationType::CONTRACT_UPLOADED
-                ));
-            }
+           
             return response()->json([
                 'success' => true,
                 'message' => 'Contract uploaded successfully',

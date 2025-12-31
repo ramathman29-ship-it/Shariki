@@ -117,7 +117,8 @@ class InvestmentController extends Controller
 
         return response()->json([
             'success' => true,
-            'contract_url' => asset('storage/' . $investment->contract)
+            'data' => [
+            'contract_url' => asset('storage/' . $investment->contract)]
         ]);
 
     } catch (\Exception $e) {

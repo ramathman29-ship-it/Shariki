@@ -12,7 +12,7 @@ use App\Models\TypeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationsController;
-
+use App\Http\Controllers\ReportController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -65,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/requests', [RequestController::class, 'allRequests']);
         Route::get('/requests/{id}', [RequestController::class, 'show']);
         Route::get('/myShares', [InvestmentController::class, 'myShares']);
-        Route::get('/myShares/{id}', [InvestmentController::class, 'myShares']);
+        Route::get('/myShares/{id}', [InvestmentController::class, 'show']);
         Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
     });
         Route::get('/investments/{id}/contract', [InvestmentController::class, 'getContract']);
@@ -82,3 +82,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
    });
+   Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::prefix('admin/reports')->group(function () {
+        Route::post('/daily', [ReportController::class, 'generateDailyReport']);
+        Route::post('/monthly', [ReportController::class, 'generateMonthlyReport']);
+        
+    });
+});
