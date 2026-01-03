@@ -142,7 +142,9 @@ class RequestController extends Controller
             $request->validate([
                 'status' => 'required|in:accepted,rejected'
             ]);
+
             $requestItem->update(['status' => $request->status]);
+         
             $requestUser = $requestItem->user;
             $requestUser = $requestItem->user;
             $url = "/user/requests/{$requestItem->id}";
@@ -166,6 +168,32 @@ class RequestController extends Controller
             ], 500);
         }
     }
+   public function payment_card(HttpRequest $request, $id)
+{
+    $user = Auth::user();
+    $requestItem = RequestModel::with('poperitys')->find($id);
+
+    if (!$requestItem) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Request not found'
+        ], 404);
+    }
+
+    if ($requestItem->status === 'accepted') {
+        PaymentController::authorizePayment($requestItem);
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment authorized successfully'
+        ]);
+    }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'Request is not accepted yet'
+    ], 400);
+}
+
     public function uploadContract(HttpRequest  $request, $id): JsonResponse
     {
         try {
@@ -208,7 +236,7 @@ class RequestController extends Controller
             $path = $request->file('contract')->store('contracts', 'public');
 
             $requestItem->update(['contract' => $path]);
-
+  
 
             $property->available_percentage -= $requestItem->rate;
             if ($property->available_percentage == 0) {
@@ -278,6 +306,9 @@ class RequestController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+    public function transfer(){
+        
     }
     public function index(): JsonResponse
     {

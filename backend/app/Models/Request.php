@@ -14,6 +14,10 @@ class Request extends Model
 }
  public function poperitys(){
  return $this->belongsTo(Poperity::class,'prp_id');
-}
 
+}
+ public function payment() { 
+    return $this->hasOne(Payment::class); 
+
+}
 }

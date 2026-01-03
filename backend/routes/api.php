@@ -23,7 +23,7 @@ Route::post('register', [Userscontroller::class, 'register']);
 Route::post('login', [Userscontroller::class, 'login']);
 Route::get('/propertiesall', [PoperityController::class, 'index']);
 Route::get('/propertiesall/{poperity}', [PoperityController::class, 'show']);
-
+Route::post('/requests/{id}/payment', [RequestController::class, 'payment_card']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('logout',[Userscontroller::class,'logout']);
 Route::get('/propertiesforuser',[PoperityController::class, 'indexUser']);
 Route::get('/propertyforuser/{poperity}',[PoperityController::class, 'showUser']);
-Route::post('/pay', [PaymentController::class, 'createPayment']);
+
 });
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/requests', [RequestController::class, 'store']);
 
-
+       Route::post('/payment/{id}', [RequestController::class, 'payment_card']);
         Route::put('/requests/{id}/status', [RequestController::class, 'updateStatus']);
 
         Route::get('/requests', [RequestController::class, 'allRequests']);

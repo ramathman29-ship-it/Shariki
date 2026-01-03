@@ -27,7 +27,9 @@ class ImageController extends Controller
 
         return response()->json([
             'message' => 'Images uploaded successfully',
-            'paths' => $paths
+            'paths' => asset('storage/' . $image)
+
+
         ]);
     }
 }
