@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('condition');
             $table->string('video')->nullable();
             $table->integer('area');
-            $table->string('status');
+            $table->string('status')->default('pending');
              $table->integer('price');
              $table->boolean('is_approved')->default(false);
               $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();

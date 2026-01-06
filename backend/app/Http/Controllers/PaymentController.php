@@ -6,72 +6,116 @@ use App\Models\Request as RequestModel;
 use App\Models\Payment;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
-use Stripe\Transfer;
 
 class PaymentController extends Controller
 {
-    // حجز المال بعد قبول الطلب
-   public static function authorizePayment(RequestModel $requestItem)
-{
-    if (!$requestItem) {
-    return response()->json([
-        'success' => false,
-        'message' => 'الطلب غير موجود'
-    ], 404);
-}
-    Stripe::setApiKey(config('services.stripe.secret'));
+    /**
+     * حجز الدفع
+     */
+    public static function authorizePayment(RequestModel $requestItem)
+    {
+        if (!$requestItem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الطلب غير موجود'
+            ], 404);
+        }
 
-    $amount = $requestItem->poperitys->price;
-    $platformFee = round($amount * 0.015, 2);
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-    $intent = PaymentIntent::create([
-        'amount' => (int) ($amount * 100),
-        'currency' => 'usd',
-        'capture_method' => 'manual',
-        'metadata' => [
-            'request_id' => $requestItem->id
-        ],
-    ]);
+        if ($requestItem->poperitys->typeRequest->name === 'fullSell'){
+        $amount = $requestItem->balance ?? $requestItem->poperitys->price;
+        }
+        else if ($requestItem->poperitys->typeRequest->name === 'partialSell')  {
+            $amount = $requestItem->balance ?? $requestItem->poperitys->price*$requestItem->rate/100;
+        }
+        $platformFee = round($amount * 0.015, 2);
 
-    $payment = Payment::create([
-        'request_id' => $requestItem->id,
-        'amount_usd' => $amount,
-        'platform_fee_usd' => $platformFee,
-        'stripe_intent_id' => $intent->id,
-        'status' => 'authorized'
-    ]);
+        // إنشاء PaymentIntent في Stripe
+        $intent = PaymentIntent::create([
+            'amount' => (int) ($amount * 100),
+            'currency' => 'usd',
+            'capture_method' => 'manual', // حجز المال
+            'metadata' => [
+                'request_id' => $requestItem->id
+            ],
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'client_secret' => $intent->client_secret,
-        'payment' => $payment
-    ], 201);
-}
+        // حفظ الدفع
+        $payment = Payment::create([
+            'request_id' => $requestItem->id,
+            'amount_usd' => $amount,
+            'platform_fee_usd' => $platformFee,
+            'stripe_intent_id' => $intent->id,
+            'status' => 'authorized',
+            'balance' => $amount,
+        ]);
 
-
-    
-    
-    public static function capturePayment(RequestModel $requestItem)
-{
-    $payment = $requestItem->payment;
-
-    if (!$payment || $payment->status !== 'authorized') {
-        return;
+        return response()->json([
+            'success' => true,
+            'client_secret' => $intent->client_secret,
+            'payment' => $payment
+        ], 201);
     }
 
-    Stripe::setApiKey(env('STRIPE_SECRET'));
+    /**
+     * التقاط الدفع وتحديث رصيد المستخدمين
+     */
+    public static function capturePayment(RequestModel $requestItem)
+    {
+        $payment = $requestItem->payment;
 
-    // استرجاع PaymentIntent
-    $paymentIntent = PaymentIntent::retrieve(
-        $payment->stripe_intent_id
-    );
+        if (!$payment || $payment->status !== 'authorized') {
+            return response()->json([
+                'success' => false,
+                'message' => 'لا يوجد دفع معلق لهذا الطلب'
+            ], 400);
+        }
 
-    // تنفيذ القبض (Capture)
-    $paymentIntent->capture();
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-    // تحديث الحالة
-    $payment->update([
-        'status' => 'paid'
-    ]);
-}
+        $paymentIntent = PaymentIntent::retrieve($payment->stripe_intent_id);
+        $paymentIntent->capture();
+
+        // تحديث حالة الدفع
+        $payment->update(['status' => 'paid']);
+
+        $balance = $payment->balance;
+
+        // خصم المبلغ من المشتري
+        $buyer = $requestItem->user;
+        $buyer->budget = ($buyer->budget ?? 0) - $balance;
+        $buyer->save();
+
+        // إضافة المبلغ إلى صاحب العقار
+        $seller = $requestItem->poperitys->user;
+        $seller->budget = ($seller->budget ?? 0) + $balance;
+        $seller->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم الدفع بنجاح وتم تحديث أرصدة المستخدمين',
+            'buyer_balance' => $buyer->budget,
+            'seller_balance' => $seller->budget,
+        ]);
+    }
+
+    /**
+     * إلغاء الدفع إذا تغيرت حالة الطلب
+     */
+    public static function handlePaymentOnStatusChange(RequestModel $requestItem)
+    {
+        $payment = Payment::where('request_id', $requestItem->id)
+            ->where('status', 'authorized')
+            ->first();
+
+        if (!$payment) return;
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $intent = PaymentIntent::retrieve($payment->stripe_intent_id);
+        $intent->cancel();
+
+        $payment->update(['status' => 'canceled']);
+    }
 }

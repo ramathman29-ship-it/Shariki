@@ -17,7 +17,10 @@ return new class extends Migration
     $table->decimal('amount_usd', 10, 2);
     $table->decimal('platform_fee_usd', 10, 2);
     $table->string('stripe_intent_id');
-    $table->enum('status', ['authorized', 'paid'])->default('authorized');
+    $table->enum('status', ['authorized', 'canceled',
+        'captured',
+        'failed'])->default('authorized');
+        $table->integer('balance');
     $table->timestamps();
         });
     }

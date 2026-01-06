@@ -239,22 +239,11 @@ class RequestController extends Controller
   
 
             $property->available_percentage -= $requestItem->rate;
-            if ($property->available_percentage == 0) {
-                if ($property->typeRequest->name === 'partialSell') {
-                    $property->typeRequest->update([
-                        'name' => 'Rent'
-                    ]);
-                    $property->update([
-                        'user_id' => 1,
-                        'available_percentage' => 100
-                    ]);
-                } else if ($property->typeRequest->name === 'fullSell') {
-                    $property->typeRequest->update([
-                        'name' => 'Done'
-                    ]);
-                }
-            }
+           
             $property->save();
+            $property->updateStatus();
+            PoperityController::autoRentFromPartialSales();
+            
             $otherRequests = RequestModel::where('prp_id', $property->id)
                 ->where('id', '!=', $requestItem->id)
                 ->whereIn('status', ['pending', 'accepted'])
@@ -307,9 +296,28 @@ class RequestController extends Controller
             ], 500);
         }
     }
-    public function transfer(){
-        
+    public function rejection($id){
+        $user = Auth::user();
+
+
+        $request = RequestModel::findOrFail($id);
+
+       $request->update(['is_rejected' => true]);
+
+      $request-> update(['status' => 'rejected']);
+
+        PaymentController::handlePaymentOnStatusChange($request);
+
+        return response()->json([
+            'success' => true,
+            'message' => "تم رفض العقار من الشاري "
+        ]);
     }
+  
+
+    
+    
+    
     public function index(): JsonResponse
     {
 
