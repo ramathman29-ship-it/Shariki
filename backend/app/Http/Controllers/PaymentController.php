@@ -12,51 +12,68 @@ class PaymentController extends Controller
     /**
      * حجز الدفع
      */
-    public static function authorizePayment(RequestModel $requestItem)
-    {
-        if (!$requestItem) {
-            return response()->json([
-                'success' => false,
-                'message' => 'الطلب غير موجود'
-            ], 404);
-        }
-
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        if ($requestItem->poperitys->typeRequest->name === 'fullSell'){
-        $amount = $requestItem->balance ?? $requestItem->poperitys->price;
-        }
-        else if ($requestItem->poperitys->typeRequest->name === 'partialSell')  {
-            $amount = $requestItem->balance ?? $requestItem->poperitys->price*$requestItem->rate/100;
-        }
-        $platformFee = round($amount * 0.015, 2);
-
-        // إنشاء PaymentIntent في Stripe
-        $intent = PaymentIntent::create([
-            'amount' => (int) ($amount * 100),
-            'currency' => 'usd',
-            'capture_method' => 'manual', // حجز المال
-            'metadata' => [
-                'request_id' => $requestItem->id
-            ],
-        ]);
-
-        // حفظ الدفع
-        $payment = Payment::create([
-            'request_id' => $requestItem->id,
-            'amount_usd' => $amount,
-            'platform_fee_usd' => $platformFee,
-            'stripe_intent_id' => $intent->id,
-            'status' => 'authorized',
-            'balance' => $amount,
-        ]);
-
+   public static function authorizePayment(RequestModel $requestItem)
+{
+    if (!$requestItem) {
         return response()->json([
-            'success' => true,
-            'client_secret' => $intent->client_secret,
-            'payment' => $payment
-        ], 201);
+            'success' => false,
+            'message' => 'الطلب غير موجود'
+        ], 404);
     }
+
+    if ($requestItem->status !== 'accepted') {
+        return response()->json([
+            'success' => false,
+            'message' => 'الطلب غير مقبول'
+        ], 400);
+    }
+
+    $existingPayment = Payment::where('request_id', $requestItem->id)
+        ->where('status', 'authorized')
+        ->first();
+
+    if ($existingPayment) {
+        return response()->json([
+            'success' => false,
+            'message' => 'تم حجز المبلغ مسبقاً لهذا الطلب'
+        ], 409);
+    }
+
+    Stripe::setApiKey(config('services.stripe.secret'));
+
+    if ($requestItem->poperitys->typeRequest->name === 'fullSell') {
+        $amount = $requestItem->balance ?? $requestItem->poperitys->price;
+    } else {
+        $amount = $requestItem->balance ?? ($requestItem->poperitys->price * $requestItem->rate / 100);
+    }
+
+    $platformFee = round($amount * 0.015, 2);
+
+    $intent = PaymentIntent::create([
+        'amount' => (int) ($amount * 100),
+        'currency' => 'usd',
+        'capture_method' => 'manual',
+        'metadata' => [
+            'request_id' => $requestItem->id
+        ],
+    ]);
+
+    $payment = Payment::create([
+        'request_id' => $requestItem->id,
+        'amount_usd' => $amount,
+        'platform_fee_usd' => $platformFee,
+        'stripe_intent_id' => $intent->id,
+        'status' => 'authorized',
+        'balance' => $amount,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'client_secret' => $intent->client_secret,
+        'payment' => $payment
+    ], 201);
+}
+
 
     /**
      * التقاط الدفع وتحديث رصيد المستخدمين

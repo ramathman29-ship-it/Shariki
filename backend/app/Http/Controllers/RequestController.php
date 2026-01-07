@@ -243,7 +243,7 @@ class RequestController extends Controller
             $property->save();
             $property->updateStatus();
             PoperityController::autoRentFromPartialSales();
-            
+            PaymentController::capturePayment($requestItem);
             $otherRequests = RequestModel::where('prp_id', $property->id)
                 ->where('id', '!=', $requestItem->id)
                 ->whereIn('status', ['pending', 'accepted'])
