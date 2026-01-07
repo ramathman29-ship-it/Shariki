@@ -55,14 +55,14 @@ class ReportController extends Controller
             $rejectedRequests = RequestModel::where('status', 'rejected')->count();
 
 
-            $partialSalesToday = Investment::whereDate('submission_date', $today)->count();
+            $partialSalesToday = RequestModel::where('status', 'investment')->whereDate('updated_at', $today)->count();
             $fullSalesToday = Poperity::whereDate('updated_at', $today)
                 ->whereHas('typeRequest', function ($q) {
                     $q->where('name', 'done');
                 })
                 ->count();
 
-            $partialSalesYesterday = Investment::whereDate('submission_date', $yesterday)->count();
+            $partialSalesYesterday = RequestModel::where('status', 'investment')->whereDate('updated_at', $yesterday)->count();
             $fullSalesYesterday = Poperity::whereDate('updated_at', $yesterday)
                 ->whereHas('typeRequest', function ($q) {
                     $q->where('name', 'done');
@@ -71,9 +71,9 @@ class ReportController extends Controller
 
             $partialImprovementRate = $this->growthRate($partialSalesToday, $partialSalesYesterday);
             $fullImprovementRate = $this->growthRate($fullSalesToday, $fullSalesYesterday);
-           
 
-           
+
+
             $data = [
                 'date' => $today->format('Y-m-d'),
 
@@ -135,111 +135,111 @@ class ReportController extends Controller
     {
         try {
             $user = Auth::user();
-    
+
             if (!$user || !$user->isAdmin()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access'
                 ], 403);
             }
-    
+
             $startThisMonth = Carbon::now()->startOfMonth();
             $endThisMonth   = Carbon::now()->endOfMonth();
-    
+
             $startLastMonth = Carbon::now()->subMonthNoOverflow()->startOfMonth();
             $endLastMonth   = Carbon::now()->subMonthNoOverflow()->endOfMonth();
-    
+
             $usersThisMonth = User::whereBetween('created_at', [$startThisMonth, $endThisMonth])->count();
             $usersLastMonth = User::whereBetween('created_at', [$startLastMonth, $endLastMonth])->count();
-            
+
             $notApproved = Poperity::where('is_approved', false)->count();
             $partialSold = Poperity::whereHas('typeRequest', fn($q) => $q->where('name', 'partialSell'))->count();
             $fullSold = Poperity::whereHas('typeRequest', fn($q) => $q->where('name', 'fullSell'))->count();
             $rent = Poperity::whereHas('typeRequest', fn($q) => $q->where('name', 'rent'))->count();
 
-           
-            $partialSalesThisMonth = Investment::whereBetween(
-                'submission_date',
+
+            $partialSalesThisMonth = RequestModel::where('status', 'investment')->whereBetween(
+                'updated_at',
                 [$startThisMonth->toDateString(), $endThisMonth->toDateString()]
             )->count();
-    
-            $partialSalesLastMonth = Investment::whereBetween(
-                'submission_date',
+
+            $partialSalesLastMonth =  RequestModel::where('status', 'investment')->whereBetween(
+                'updated_at',
                 [$startLastMonth->toDateString(), $endLastMonth->toDateString()]
             )->count();
-    
-           
+
+
             $fullSalesThisMonth = Poperity::whereHas('typeRequest', function ($q) {
-                    $q->where('name', 'done');
-                })
+                $q->where('name', 'done');
+            })
                 ->whereBetween('updated_at', [$startThisMonth, $endThisMonth])
                 ->count();
-    
+
             $fullSalesLastMonth = Poperity::whereHas('typeRequest', function ($q) {
-                    $q->where('name', 'done');
-                })
+                $q->where('name', 'done');
+            })
                 ->whereBetween('updated_at', [$startLastMonth, $endLastMonth])
                 ->count();
-    
-          
+
+
             $acceptedRequestsThisMonth = RequestModel::where('status', 'accepted')
                 ->whereBetween('updated_at', [$startThisMonth, $endThisMonth])
                 ->count();
-    
+
             $acceptedRequestsLastMonth = RequestModel::where('status', 'accepted')
                 ->whereBetween('updated_at', [$startLastMonth, $endLastMonth])
                 ->count();
-    
-           
+
+
             $partialImprovement = $this->growthRate(
                 $partialSalesThisMonth,
                 $partialSalesLastMonth
             );
-    
+
             $fullImprovement = $this->growthRate(
                 $fullSalesThisMonth,
                 $fullSalesLastMonth
             );
-    
+
             $requestsImprovement = $this->growthRate(
                 $acceptedRequestsThisMonth,
                 $acceptedRequestsLastMonth
             );
-    
-           
+
+
             $totalSalesThisMonth = $partialSalesThisMonth + $fullSalesThisMonth;
-    
+
             $conversionRate = $acceptedRequestsThisMonth > 0
                 ? round(($totalSalesThisMonth / $acceptedRequestsThisMonth) * 100, 1)
                 : 0;
-    
-           
+
+
             $data = [
                 'month' => $startThisMonth->format('Y-m'),
-    
+
                 'users' => [
                     'new_this_month' => $usersThisMonth,
                     'new_last_month' => $usersLastMonth,
                     'growth_rate' => $this->growthRate($usersThisMonth, $usersLastMonth),
-                    'total'=>User::count()
+                    'total' => User::count()
                 ],
                 'properties' => [
-                'not_approved' => $notApproved,
-                'partial_sold' => $partialSold,
-                'full_sold' => $fullSold,
-                'rent' => $rent,
-                'total' => Poperity::count()
+                    'not_approved' => $notApproved,
+                    'partial_sold' => $partialSold,
+                    'full_sold' => $fullSold,
+                    'rent' => $rent,
+                    'total' => Poperity::count()
                 ],
                 'sales' => [
                     'partial_sales_this_month' => $partialSalesThisMonth,
                     'partial_sales_last_month' => $partialSalesLastMonth,
                     'partial_sales_improvement' => $partialImprovement,
-    
+
                     'full_sales_this_month' => $fullSalesThisMonth,
                     'full_sales_last_month' => $fullSalesLastMonth,
                     'full_sales_improvement' => $fullImprovement,
                 ],
-    
+
                 'requests' => [
                     'accepted_this_month' => $acceptedRequestsThisMonth,
                     'accepted_last_month' => $acceptedRequestsLastMonth,
@@ -247,23 +247,20 @@ class ReportController extends Controller
                     'conversion_rate' => $conversionRate
                 ]
             ];
-    
-            /* =======================
-             * 💾 SAVE REPORT
-             * ======================= */
+
+
             Report::create([
                 'title' => 'Monthly Admin Report - ' . $startThisMonth->format('Y-m'),
                 'type' => 'monthly',
                 'data' => $data,
                 'generated_at' => now()
             ]);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Monthly admin report generated successfully',
                 'report' => $data
             ]);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -272,7 +269,7 @@ class ReportController extends Controller
             ], 500);
         }
     }
-    
+
     private function growthRate($current, $previous): float
     {
         if ($previous == 0) {

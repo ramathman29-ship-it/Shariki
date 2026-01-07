@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PoperityController;
 use App\Http\Controllers\RoleController;
@@ -64,11 +63,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/requests', [RequestController::class, 'allRequests']);
         Route::get('/requests/{id}', [RequestController::class, 'show']);
-        Route::get('/myShares', [InvestmentController::class, 'myShares']);
-        Route::get('/myShares/{id}', [InvestmentController::class, 'show']);
+        Route::get('/myShares', [RequestController::class, 'myShares']);
+        Route::get('/myShares/{id}', [RequestController::class, 'showMyShare']);
         Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
     });
-        Route::get('/investments/{id}/contract', [InvestmentController::class, 'getContract']);
+        Route::get('/investments/{id}/contract', [RequestController::class, 'getContract']);
 
 
     Route::prefix('admin')->group(function () {
@@ -76,7 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/requests', [RequestController::class, 'index']);
         Route::get('/requests/{id}', [RequestController::class, 'show']);
         Route::post('/requests/{id}/contract', [RequestController::class, 'uploadContract']);
-        Route::get('/allShares', [InvestmentController::class, 'allShares']);
+        Route::get('/allShares', [RequestController::class, 'allShares']);
     });
 });
 Route::middleware('auth:sanctum')->group(function(){
