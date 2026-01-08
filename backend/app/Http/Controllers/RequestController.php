@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 use App\Notifications\GenericNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Enums\NotificationType;
-
+use App\Http\Resources\MyShareResource;
 class RequestController extends Controller
 {
 
@@ -59,7 +59,7 @@ class RequestController extends Controller
             ]);
             $propertyOwner = $property->user;
             if ($propertyOwner && $propertyOwner->id !== $user->id) {
-                $url = "/user/requests/{$submittedRequest->id}";
+                $url = "/user/requests";
                 $propertyOwner->notify(new GenericNotification(
                     "You have a new request for your property",
                     $url,
@@ -90,6 +90,7 @@ class RequestController extends Controller
 
             $sentRequests = RequestModel::with(['poperitys', 'poperitys.user'])
                 ->where('user_id', $user->id)
+                ->whereNot('status','investment')
                 ->latest()
                 ->get();
 
@@ -97,7 +98,7 @@ class RequestController extends Controller
             $propertyIds = Poperity::where('user_id', $user->id)->pluck('id');
             $receivedRequests = RequestModel::with(['poperitys', 'poperitys.user', 'user'])
                 ->whereIn('prp_id', $propertyIds)
-                ->whereNotIn('status', ['done', 'rejected'])
+                ->whereNotIn('status', ['done', 'rejected','investment'])
                 ->latest()
                 ->get();
 
@@ -200,7 +201,6 @@ class RequestController extends Controller
             $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
             $property = $requestItem->poperitys;
             $buyer = $requestItem->user;
-            $propertyOwner = $property->user;
             $user = Auth::user();
             if (!$requestItem) {
                 return response()->json([
@@ -239,7 +239,7 @@ class RequestController extends Controller
   
 
             $property->available_percentage -= $requestItem->rate;
-           
+
             $property->save();
             $property->updateStatus();
             PoperityController::autoRentFromPartialSales();
@@ -256,32 +256,25 @@ class RequestController extends Controller
             }
             if ($requestItem->rate == 100) {
                 $property->update(['user_id' => $requestItem->user_id]);
+                $property->typeRequest->update([
+                    'name' => 'done'
+                ]);
             } else {
-                Investment::create([
-                    'user_id'   => $requestItem->user_id,
-                    'prp_id'    => $requestItem->prp_id,
-                    'rate'      => $requestItem->rate,
-                    'contract'  => $path,
-                    'submission_date' => now()->toDateString(),
+                $requestItem->update([
+                    'status' => 'investment',
+                    'contract' => $path
                 ]);
             }
 
-            $requestItem->delete();
 
             $buyer->notify(new GenericNotification(
                 "The contract has been uploaded successfully",
-                "/contracts/{$requestItem->id}",
+                "/investments/{$requestItem->id}/contract",
                 NotificationType::CONTRACT_UPLOADED
             ));
 
 
-            if ($propertyOwner && $propertyOwner->id !== $buyer->id) {
-                $propertyOwner->notify(new GenericNotification(
-                    "A contract has been uploaded for your property",
-                    "/propertiesforuser",
-                    NotificationType::CONTRACT_UPLOADED
-                ));
-            }
+           
             return response()->json([
                 'success' => true,
                 'message' => 'Contract uploaded successfully',
@@ -410,4 +403,157 @@ class RequestController extends Controller
             'data' => new RequestResource($requestItem)
         ]);
     }
+    public function myShares(): JsonResponse
+{
+    try {
+        $user = Auth::user();
+
+        $shares = RequestModel::with(['poperitys.typeRequest'])
+            ->where('user_id', $user->id)
+            ->where('status', 'investment')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'shares' => MyShareResource::collection($shares),
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching my shares: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error fetching shares.'
+        ], 500);
+    }
+}
+
+public function showMyShare($id): JsonResponse
+{
+    try {
+        $share = RequestModel::with(['poperitys', 'poperitys.user'])->find($id);
+
+        if (!$share) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Share not found'
+            ], 404);
+        }
+
+        if ($share->status !== 'investment') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This request is not an investment'
+            ], 403);
+        }
+
+        if (Gate::denies('viewshare', $share)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => new MyShareResource($share)
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching share: ' . $e->getMessage(), [
+            'share_id' => $id
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong'
+        ], 500);
+    }
+}
+
+public function getContract($id): JsonResponse
+{
+    try {
+        $share = RequestModel::find($id);
+
+        if (!$share) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Share not found'
+            ], 404);
+        }
+
+        if ($share->status !== 'investment') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This request is not an investment'
+            ], 403);
+        }
+
+        if (Gate::denies('viewshare', $share)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        if (!$share->contract || !file_exists(storage_path('app/public/' . $share->contract))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contract file not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'contract_url' => asset('storage/' . $share->contract)
+            
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching share contract', [
+            'share_id' => $id,
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Something went wrong'
+        ], 500);
+    }
+}
+
+public function allShares(): JsonResponse
+{
+    try {
+        $user = Auth::user();
+
+        if (!$user->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $shares = RequestModel::with(['poperitys', 'user'])
+            ->where('status', 'investment')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'shares' => MyShareResource::collection($shares),
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching all shares: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error fetching shares'
+        ], 500);
+    }
+}
+
 }

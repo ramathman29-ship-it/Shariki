@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PoperityController;
 use App\Http\Controllers\RoleController;
@@ -12,7 +11,7 @@ use App\Models\TypeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationsController;
-
+use App\Http\Controllers\ReportController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -68,11 +67,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/requests', [RequestController::class, 'allRequests']);
         Route::get('/requests/{id}', [RequestController::class, 'show']);
-        Route::get('/myShares', [InvestmentController::class, 'myShares']);
-        Route::get('/myShares/{id}', [InvestmentController::class, 'myShares']);
+        Route::get('/myShares', [RequestController::class, 'myShares']);
+        Route::get('/myShares/{id}', [RequestController::class, 'showMyShare']);
         Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
     });
-        Route::get('/investments/{id}/contract', [InvestmentController::class, 'getContract']);
+        Route::get('/investments/{id}/contract', [RequestController::class, 'getContract']);
 
 
     Route::prefix('admin')->group(function () {
@@ -80,9 +79,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/requests', [RequestController::class, 'index']);
         Route::get('/requests/{id}', [RequestController::class, 'show']);
         Route::post('/requests/{id}/contract', [RequestController::class, 'uploadContract']);
-        Route::get('/allShares', [InvestmentController::class, 'allShares']);
+        Route::get('/allShares', [RequestController::class, 'allShares']);
     });
 });
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
    });
+   Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::prefix('admin/reports')->group(function () {
+        Route::post('/daily', [ReportController::class, 'generateDailyReport']);
+        Route::post('/monthly', [ReportController::class, 'generateMonthlyReport']);
+        
+    });
+});

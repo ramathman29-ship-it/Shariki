@@ -128,7 +128,7 @@ class PoperityController extends Controller
     foreach ($admins as $admin) {
         $admin->notify(new GenericNotification(
             "You have a new property wait your approve",
-            "/admin/properties{$property->id}", 
+            "/properties/{$property->id}", 
             NotificationType::REQUEST_PENDING_APPROVAL
         ));
     }
@@ -258,7 +258,7 @@ class PoperityController extends Controller
         $propertyOwner= $property->user;
         $propertyOwner->notify(new GenericNotification(
             "Your property approved",
-            "/user/propertyforuser/{$property->id}", 
+            "/propertyforuser/{$property->id}", 
             NotificationType::PROPERTY_APPROVED
         ));
         return response()->json([

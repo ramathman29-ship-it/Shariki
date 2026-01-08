@@ -1,13 +1,24 @@
 <?php
+// app/Models/Report.php
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
-     public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'type',
+        'data',
+        'generated_at'
+    ];
+
+    protected $casts = [
+        'data' => 'array',
+        'generated_at' => 'datetime'
+    ];
 }

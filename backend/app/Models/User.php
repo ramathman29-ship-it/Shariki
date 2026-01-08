@@ -50,10 +50,7 @@ public function propirties()
     {
         return $this->hasMany(Request::class);
     }
- public function investments()
-    {
-        return $this->hasMany(Investment::class);
-    }
+ 
     public function notification()
     {
         return $this->hasMany(Notification::class , 'user_id');

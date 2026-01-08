@@ -38,7 +38,8 @@ class RequestPolicy
    
     return $user->isAdmin();
 }
-
+public function viewshare(User $user, Request $request): bool {
+     return $user->id === $request->user_id || $user->isAdmin();
+     }
 }
-
 
