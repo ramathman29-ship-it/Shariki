@@ -31,4 +31,17 @@ class Poperity extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function updateStatus()
+    {
+        if ($this->available_percentage <= 0) {
+            $this->status = 'done';
+        } elseif ($this->is_approved) {
+            $this->status = 'view';
+        } else {
+            $this->status = 'pending';
+        }
+
+        $this->save();
+    }
 }

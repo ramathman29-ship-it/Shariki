@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/properties', [PoperityController::class, 'indexnotapprove']);
     Route::get('/properties/{poperity}', [PoperityController::class, 'shownotapprove']);
     Route::post('/properties', [PoperityController::class, 'store']);
+     Route::post('/propertiesrent', [PoperityController::class, 'autoRentFromPartialSales']);
     Route::put('/properties/{poperity}', [PoperityController::class, 'update']);
     Route::delete('/properties/{poperity}', [PoperityController::class, 'destroy']);
     Route::get('logout',[Userscontroller::class,'logout']);

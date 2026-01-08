@@ -21,6 +21,7 @@ return new class extends Migration
              $table->string("status");
              $table->string("contract")->nullable();
               $table->boolean('is_rejected')->default(false);
+               $table->string('payment_status')->default('pending');
             $table->timestamps();
         });
     }

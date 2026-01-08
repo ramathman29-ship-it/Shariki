@@ -17,6 +17,9 @@ use App\Notifications\GenericNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Enums\NotificationType;
 use App\Http\Resources\MyShareResource;
+use App\Models\TypeRequest;
+use App\Models\User;
+
 class RequestController extends Controller
 {
 
@@ -181,114 +184,156 @@ class RequestController extends Controller
         ], 404);
     }
 
-    if ($requestItem->status === 'accepted') {
-        PaymentController::authorizePayment($requestItem);
+    if ($requestItem->status !== 'accepted') {
         return response()->json([
-            'success' => true,
-            'message' => 'Payment authorized successfully'
-        ]);
+            'success' => false,
+            'message' => 'Request is not accepted yet'
+        ], 400);
     }
+
+    // التحقق إذا تم الاحتجاز مسبقًا
+    if ($requestItem->payment_status === 'held') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Payment has already been held'
+        ], 400);
+    }
+
+    // تنفيذ الاحتجاز لأول مرة
+    PaymentController::authorizePayment($requestItem);
+
+    // تحديث الحالة بعد الاحتجاز
+    $requestItem->payment_status = 'held';
+    $requestItem->save();
 
     return response()->json([
-        'success' => false,
-        'message' => 'Request is not accepted yet'
-    ], 400);
+        'success' => true,
+        'message' => 'Payment held successfully'
+    ]);
 }
 
-    public function uploadContract(HttpRequest  $request, $id): JsonResponse
-    {
-        try {
-            $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
-            $property = $requestItem->poperitys;
-            $buyer = $requestItem->user;
-            $user = Auth::user();
-            if (!$requestItem) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Request not found'
-                ], 404);
-            }
 
-            if ($requestItem->rate > $property->available_percentage) {
-                $requestItem->update(['status' => 'rejected']);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'available percentage less than rate'
-                ], 403);
-            }
+   public function uploadContract(HttpRequest $request, $id): JsonResponse
+{
+    try {
+        $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
+        $property = $requestItem->poperitys;
+        $buyer = $requestItem->user;
+        $user = Auth::user();
 
-            if (Gate::denies('uploadContract', $requestItem)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized'
-                ], 403);
-            }
-            if ($requestItem->status !== 'accepted') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Contract can only be uploaded for accepted requests.'
-                ], 403);
-            }
-            $request->validate([
-                'contract' => 'required|image|mimes:jpg,jpeg,png|max:5120'
-            ]);
-
-            $path = $request->file('contract')->store('contracts', 'public');
-
-            $requestItem->update(['contract' => $path]);
-  
-
-            $property->available_percentage -= $requestItem->rate;
-
-            $property->save();
-            $property->updateStatus();
-            PoperityController::autoRentFromPartialSales();
-            PaymentController::capturePayment($requestItem);
-            $otherRequests = RequestModel::where('prp_id', $property->id)
-                ->where('id', '!=', $requestItem->id)
-                ->whereIn('status', ['pending', 'accepted'])
-                ->get();
-
-            foreach ($otherRequests as $req) {
-                if ($req->rate > $property->available_percentage) {
-                    $req->update(['status' => 'rejected']);
-                }
-            }
-            if ($requestItem->rate == 100) {
-                $property->update(['user_id' => $requestItem->user_id]);
-                $property->typeRequest->update([
-                    'name' => 'done'
-                ]);
-            } else {
-                $requestItem->update([
-                    'status' => 'investment',
-                    'contract' => $path
-                ]);
-            }
-
-
-            $buyer->notify(new GenericNotification(
-                "The contract has been uploaded successfully",
-                "/investments/{$requestItem->id}/contract",
-                NotificationType::CONTRACT_UPLOADED
-            ));
-
-
-           
-            return response()->json([
-                'success' => true,
-                'message' => 'Contract uploaded successfully',
-                'contract_url' => asset('storage/' . $path)
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error uploading contract: ' . $e->getMessage());
-
+        if (!$requestItem) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'message' => 'Request not found'
+            ], 404);
         }
+
+        if ($requestItem->rate > $property->available_percentage) {
+            $requestItem->update(['status' => 'rejected']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Available percentage less than rate'
+            ], 403);
+        }
+
+        if (Gate::denies('uploadContract', $requestItem)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        if ($requestItem->status !== 'accepted') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contract can only be uploaded for accepted requests.'
+            ], 403);
+        }
+
+        $request->validate([
+            'contract' => 'required|image|mimes:jpg,jpeg,png|max:5120'
+        ]);
+
+        $path = $request->file('contract')->store('contracts', 'public');
+        $requestItem->update(['contract' => $path]);
+
+        // تحديث نسبة العقار
+        $property->available_percentage -= $requestItem->rate;
+        $property->save();
+        $property->updateStatus();
+
+        // تنفيذ الاحتجاز أو الدفع النهائي
+        PaymentController::capturePayment($requestItem);
+
+        // رفض الطلبات الأخرى التي تجاوزت النسبة المتبقية
+        $otherRequests = RequestModel::where('prp_id', $property->id)
+            ->where('id', '!=', $requestItem->id)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->get();
+
+        foreach ($otherRequests as $req) {
+            if ($req->rate > $property->available_percentage) {
+                $req->update(['status' => 'rejected']);
+            }
+        }
+
+        // إذا تم شراء كامل العقار
+        if ($requestItem->rate == 100) {
+            $property->update(['user_id' => $requestItem->user_id]);
+            $property->typeRequest->update(['name' => 'done']);
+        } else {
+            $requestItem->update([
+                'status' => 'investment',
+                'contract' => $path
+            ]);
+        }
+
+        // ===== تحديث العقار للعرض على الإيجار إذا كان بيع جزئي =====
+       if (
+    $property->status === 'done' &&
+    $property->typeRequest->name === 'partialSell' &&
+    $property->RT_id === null) {
+    $admin = User::where('role', 'admin')->first();
+
+    if ($admin) {
+        $rentType = TypeRequest::firstOrCreate([
+            'name' => 'Rent'
+        ]);
+
+        $property->update([
+            'user_id' => $admin->id,
+            'price' => $property->price * 0.05,
+            'RT_id' => $rentType->id,
+            'available_percentage' => 100,
+            'is_approved' => true,
+            'status' => 'view'
+        ]);
     }
+}
+
+       
+        $buyer->notify(new GenericNotification(
+            "The contract has been uploaded successfully",
+            "/investments/{$requestItem->id}/contract",
+            NotificationType::CONTRACT_UPLOADED
+        ));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contract uploaded successfully',
+            'contract_url' => asset('storage/' . $path)
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error uploading contract: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
     public function rejection($id){
         $user = Auth::user();
 

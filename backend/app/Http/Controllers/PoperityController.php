@@ -113,7 +113,7 @@ class PoperityController extends Controller
     }
 
     // تحديث حالة العقار
-    $this->updateStatus($property);
+   $property->updateStatus();
 
     // حفظ الصور (مجموعة صور متعددة)
     $this->storeImages($property, $request->file('images', []));
@@ -254,7 +254,7 @@ class PoperityController extends Controller
         $property->update(['is_approved' => true]);
 
         
-        $this->updateStatus($property);
+       $property->updateStatus();
         $propertyOwner= $property->user;
         $propertyOwner->notify(new GenericNotification(
             "Your property approved",
@@ -295,13 +295,11 @@ public function notapprove($id)
         'message' => 'تم رفض وحذف العقار مع الصور المرتبطة'
     ]);
 }
-/**
- * إنشاء عقار للإيجار تلقائيًا بناءً على عقارات منتهية نوعها بيع جزئي
- */
+
 public static function autoRentFromPartialSales()
 {
-   $admin = User::all()->first(fn($user) => $user->isAdmin());
- 
+    $admin = User::all()->first(fn($user) => $user->isAdmin());
+
     if (!$admin) {
         return response()->json([
             'success' => false,
@@ -315,49 +313,37 @@ public static function autoRentFromPartialSales()
             $q->where('name', 'partialSell'); 
         })->get();
 
-    $createdRents = [];
+    $updatedProperties = [];
 
-   foreach ($properties as $property) {
+    foreach ($properties as $property) {
 
-    // إنشاء سجل TypeRequest للإيجار
-    $typeRequest = TypeRequest::firstOrCreate([
-        'name' => 'Rent'
-    ]);
-
-    // إنشاء العقار الجديد للإيجار
-    $rentProperty = Poperity::create([
-        'user_id' => $admin->id,
-        'location' => $property->location,
-        'price' => $property->price * 0.05,
-        'RT_id' => $typeRequest->id, // ربط نوع الطلب
-        'available_percentage' => 100,
-        'is_approved' => true,
-        'status' => 'view',
-        'description' => $property->description,
-        'address' => $property->address,
-        'condition' => $property->condition,
-        'area' => $property->area
-    ]);
-
-    // نسخ الصور
-    foreach ($property->photos as $photo) {
-        Image::create([
-            'poperity_id' => $rentProperty->id,
-            'image_path' => $photo->image_path,
-            'title' => $photo->title
+        
+        $typeRequest = TypeRequest::firstOrCreate([
+            'name' => 'Rent'
         ]);
+
+        
+        $property->update([
+            'user_id' => $admin->id,          
+            'price' => $property->price * 0.05,
+            'RT_id' => $typeRequest->id,       
+            'available_percentage' => 100,
+            'is_approved' => true,
+            'status' => 'view'
+        ]);
+
+        $updatedProperties[] = $property;
     }
-
-    $createdRents[] = $rentProperty;
-}
-
 
     return response()->json([
         'success' => true,
-        'message' => count($createdRents) . ' عقار تم تحويله للإيجار بنجاح',
-        'properties' => PoperityResource::collection($createdRents)
+        'updated_properties' => $updatedProperties
     ]);
 }
+
+
+
+ 
 
     /*
      * رفع مجموعة صور للعقار
@@ -409,19 +395,5 @@ public static function autoRentFromPartialSales()
         if ($request->filled('type')) $query->where('type', $request->type);
     }
 
-    /*
-     * تحديث حالة العقار
-     */
-   public function updateStatus(Poperity $property)
-{
-    if ($property->available_percentage <= 0) {
-        $property->status = 'done';
-    } elseif ($property->is_approved) {
-        $property->status = 'view';
-    } else {
-        $property->status = 'pending';
-    }
-
-    $property->save();
-}
+   
 }
