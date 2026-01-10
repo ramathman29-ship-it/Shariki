@@ -38,7 +38,6 @@ class NotificationsController extends Controller
         }
     }
 
-    // تعليم جميع الإشعارات غير المقروءة كـ read
     public function markAllAsRead(): JsonResponse
     {
         try {
@@ -62,30 +61,6 @@ class NotificationsController extends Controller
         }
     }
 
-    // عد الإشعارات غير المقروءة فقط
-    public function unreadCount(): JsonResponse
-    {
-        try {
-            $user = Auth::user();
-
-            $count = $user->unreadNotifications()->count();
-
-            return response()->json([
-                'success' => true,
-                'unread_count' => $count
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching unread notifications count', [
-                'user_id' => Auth::id(),
-                'error' => $e->getMessage()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong while fetching unread notifications count.'
-            ], 500);
-        }
-    }
 
 
 }

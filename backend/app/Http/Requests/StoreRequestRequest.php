@@ -8,7 +8,7 @@ class StoreRequestRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     */
+api     */
     public function authorize(): bool
     {
         return Auth::check();;

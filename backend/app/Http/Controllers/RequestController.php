@@ -93,7 +93,7 @@ class RequestController extends Controller
 
             $sentRequests = RequestModel::with(['poperitys', 'poperitys.user'])
                 ->where('user_id', $user->id)
-                ->whereNot('status','investment')
+                ->whereNot('status', 'investment')
                 ->latest()
                 ->get();
 
@@ -101,7 +101,7 @@ class RequestController extends Controller
             $propertyIds = Poperity::where('user_id', $user->id)->pluck('id');
             $receivedRequests = RequestModel::with(['poperitys', 'poperitys.user', 'user'])
                 ->whereIn('prp_id', $propertyIds)
-                ->whereNotIn('status', ['done', 'rejected','investment'])
+                ->whereNotIn('status', ['done', 'rejected', 'investment'])
                 ->latest()
                 ->get();
 
@@ -148,7 +148,7 @@ class RequestController extends Controller
             ]);
 
             $requestItem->update(['status' => $request->status]);
-         
+
             $requestUser = $requestItem->user;
             $requestUser = $requestItem->user;
             $url = "/user/requests/{$requestItem->id}";
@@ -172,54 +172,10 @@ class RequestController extends Controller
             ], 500);
         }
     }
-   public function payment_card(HttpRequest $request, $id)
-{
-    $user = Auth::user();
-    $requestItem = RequestModel::with('poperitys')->find($id);
-
-    if (!$requestItem) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Request not found'
-        ], 404);
-    }
-
-    if ($requestItem->status !== 'accepted') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Request is not accepted yet'
-        ], 400);
-    }
-
-    // التحقق إذا تم الاحتجاز مسبقًا
-    if ($requestItem->payment_status === 'held') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Payment has already been held'
-        ], 400);
-    }
-
-    // تنفيذ الاحتجاز لأول مرة
-    PaymentController::authorizePayment($requestItem);
-
-    // تحديث الحالة بعد الاحتجاز
-    $requestItem->payment_status = 'held';
-    $requestItem->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Payment held successfully'
-    ]);
-}
-
-
-   public function uploadContract(HttpRequest $request, $id): JsonResponse
-{
-    try {
-        $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
-        $property = $requestItem->poperitys;
-        $buyer = $requestItem->user;
+    public function payment_card(HttpRequest $request, $id)
+    {
         $user = Auth::user();
+        $requestItem = RequestModel::with('poperitys')->find($id);
 
         if (!$requestItem) {
             return response()->json([
@@ -228,121 +184,172 @@ class RequestController extends Controller
             ], 404);
         }
 
-        if ($requestItem->rate > $property->available_percentage) {
-            $requestItem->update(['status' => 'rejected']);
-            return response()->json([
-                'success' => false,
-                'message' => 'Available percentage less than rate'
-            ], 403);
-        }
-
-        if (Gate::denies('uploadContract', $requestItem)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
         if ($requestItem->status !== 'accepted') {
             return response()->json([
                 'success' => false,
-                'message' => 'Contract can only be uploaded for accepted requests.'
-            ], 403);
+                'message' => 'Request is not accepted yet'
+            ], 400);
         }
 
-        $request->validate([
-            'contract' => 'required|image|mimes:jpg,jpeg,png|max:5120'
-        ]);
-
-        $path = $request->file('contract')->store('contracts', 'public');
-        $requestItem->update(['contract' => $path]);
-
-        // تحديث نسبة العقار
-        $property->available_percentage -= $requestItem->rate;
-        $property->save();
-        $property->updateStatus();
-
-        // تنفيذ الاحتجاز أو الدفع النهائي
-        PaymentController::capturePayment($requestItem);
-
-        // رفض الطلبات الأخرى التي تجاوزت النسبة المتبقية
-        $otherRequests = RequestModel::where('prp_id', $property->id)
-            ->where('id', '!=', $requestItem->id)
-            ->whereIn('status', ['pending', 'accepted'])
-            ->get();
-
-        foreach ($otherRequests as $req) {
-            if ($req->rate > $property->available_percentage) {
-                $req->update(['status' => 'rejected']);
-            }
+        // التحقق إذا تم الاحتجاز مسبقًا
+        if ($requestItem->payment_status === 'held') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment has already been held'
+            ], 400);
         }
 
-        // إذا تم شراء كامل العقار
-        if ($requestItem->rate == 100) {
-            $property->update(['user_id' => $requestItem->user_id]);
-            $property->typeRequest->update(['name' => 'done']);
-        } else {
-            $requestItem->update([
-                'status' => 'investment',
-                'contract' => $path
-            ]);
-        }
+        // تنفيذ الاحتجاز لأول مرة
+        PaymentController::authorizePayment($requestItem);
 
-        // ===== تحديث العقار للعرض على الإيجار إذا كان بيع جزئي =====
-       if (
-    $property->status === 'done' &&
-    $property->typeRequest->name === 'partialSell' &&
-    $property->RT_id === null) {
-    $admin = User::where('role', 'admin')->first();
-
-    if ($admin) {
-        $rentType = TypeRequest::firstOrCreate([
-            'name' => 'Rent'
-        ]);
-
-        $property->update([
-            'user_id' => $admin->id,
-            'price' => $property->price * 0.05,
-            'RT_id' => $rentType->id,
-            'available_percentage' => 100,
-            'is_approved' => true,
-            'status' => 'view'
-        ]);
-    }
-}
-
-       
-        $buyer->notify(new GenericNotification(
-            "The contract has been uploaded successfully",
-            "/investments/{$requestItem->id}/contract",
-            NotificationType::CONTRACT_UPLOADED
-        ));
+        // تحديث الحالة بعد الاحتجاز
+        $requestItem->payment_status = 'held';
+        $requestItem->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Contract uploaded successfully',
-            'contract_url' => asset('storage/' . $path)
+            'message' => 'Payment held successfully'
         ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error uploading contract: ' . $e->getMessage());
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
 
-    public function rejection($id){
+
+    public function uploadContract(HttpRequest $request, $id): JsonResponse
+    {
+        try {
+            $requestItem = RequestModel::with('poperitys.typeRequest')->find($id);
+            $property = $requestItem->poperitys;
+            $buyer = $requestItem->user;
+            $user = Auth::user();
+
+            if (!$requestItem) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Request not found'
+                ], 404);
+            }
+
+            if ($requestItem->rate > $property->available_percentage) {
+                $requestItem->update(['status' => 'rejected']);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Available percentage less than rate'
+                ], 403);
+            }
+
+            if (Gate::denies('uploadContract', $requestItem)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            if ($requestItem->status !== 'accepted') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Contract can only be uploaded for accepted requests.'
+                ], 403);
+            }
+
+            $request->validate([
+                'contract' => 'required|image|mimes:jpg,jpeg,png|max:5120'
+            ]);
+
+            $path = $request->file('contract')->store('contracts', 'public');
+            $requestItem->update(['contract' => $path]);
+
+            // تحديث نسبة العقار
+            $property->available_percentage -= $requestItem->rate;
+            $property->save();
+            $property->updateStatus();
+
+            // تنفيذ الاحتجاز أو الدفع النهائي
+            PaymentController::capturePayment($requestItem);
+
+            // رفض الطلبات الأخرى التي تجاوزت النسبة المتبقية
+            $otherRequests = RequestModel::where('prp_id', $property->id)
+                ->where('id', '!=', $requestItem->id)
+                ->whereIn('status', ['pending', 'accepted'])
+                ->get();
+
+            foreach ($otherRequests as $req) {
+                if ($req->rate > $property->available_percentage) {
+                    $req->update(['status' => 'rejected']);
+                }
+            }
+
+            // إذا تم شراء كامل العقار
+            if ($requestItem->rate == 100) {
+                $property->update(['user_id' => $requestItem->user_id]);
+                $property->typeRequest->update(['name' => 'done']);
+            } else {
+                $requestItem->update([
+                    'status' => 'investment',
+                    'contract' => $path
+                ]);
+            }
+
+            // ===== تحديث العقار للعرض على الإيجار إذا كان بيع جزئي =====
+            if (
+                $property->status === 'done' &&
+                $property->typeRequest->name === 'partialSell' &&
+                $property->RT_id === null
+            ) {
+                $admin = User::where('role', 'admin')->first();
+
+                if ($admin) {
+                    $rentType = TypeRequest::firstOrCreate([
+                        'name' => 'Rent'
+                    ]);
+
+                    $property->update([
+                        'user_id' => $admin->id,
+                        'price' => $property->price * 0.05,
+                        'RT_id' => $rentType->id,
+                        'available_percentage' => 100,
+                        'is_approved' => true,
+                        'status' => 'view'
+                    ]);
+                }
+            }
+
+
+            $buyer->notify(new GenericNotification(
+                "The contract has been uploaded successfully",
+                "/investments/{$requestItem->id}/contract",
+                NotificationType::CONTRACT_UPLOADED
+            ));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contract uploaded successfully',
+                'contract_url' => asset('storage/' . $path)
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error uploading contract: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function rejection($id)
+    {
         $user = Auth::user();
 
-
         $request = RequestModel::findOrFail($id);
+        $seller = $request->poperitys->user ?? null;
+        if ($seller) {
+            $seller->notify(new GenericNotification(
+                "Request was rejected by the buyer",
+                "/user/requests/{$request->id}",
+                NotificationType::REQUEST_REJECTED
+            ));
+        }
+        $request->update(['is_rejected' => true]);
 
-       $request->update(['is_rejected' => true]);
-
-      $request-> update(['status' => 'rejected']);
+        $request->update(['status' => 'rejected']);
 
         PaymentController::handlePaymentOnStatusChange($request);
 
@@ -351,11 +358,11 @@ class RequestController extends Controller
             'message' => "تم رفض العقار من الشاري "
         ]);
     }
-  
 
-    
-    
-    
+
+
+
+
     public function index(): JsonResponse
     {
 
@@ -449,156 +456,151 @@ class RequestController extends Controller
         ]);
     }
     public function myShares(): JsonResponse
-{
-    try {
-        $user = Auth::user();
+    {
+        try {
+            $user = Auth::user();
 
-        $shares = RequestModel::with(['poperitys.typeRequest'])
-            ->where('user_id', $user->id)
-            ->where('status', 'investment')
-            ->latest()
-            ->get();
+            $shares = RequestModel::with(['poperitys.typeRequest'])
+                ->where('user_id', $user->id)
+                ->where('status', 'investment')
+                ->latest()
+                ->get();
 
-        return response()->json([
-            'success' => true,
-            'shares' => MyShareResource::collection($shares),
-        ]);
+            return response()->json([
+                'success' => true,
+                'shares' => MyShareResource::collection($shares),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching my shares: ' . $e->getMessage());
 
-    } catch (\Exception $e) {
-        Log::error('Error fetching my shares: ' . $e->getMessage());
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Error fetching shares.'
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching shares.'
+            ], 500);
+        }
     }
-}
 
-public function showMyShare($id): JsonResponse
-{
-    try {
-        $share = RequestModel::with(['poperitys', 'poperitys.user'])->find($id);
+    public function showMyShare($id): JsonResponse
+    {
+        try {
+            $share = RequestModel::with(['poperitys', 'poperitys.user'])->find($id);
 
-        if (!$share) {
+            if (!$share) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Share not found'
+                ], 404);
+            }
+
+            if ($share->status !== 'investment') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This request is not an investment'
+                ], 403);
+            }
+
+            if (Gate::denies('viewshare', $share)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => new MyShareResource($share)
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching share: ' . $e->getMessage(), [
+                'share_id' => $id
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Share not found'
-            ], 404);
+                'message' => 'Something went wrong'
+            ], 500);
         }
-
-        if ($share->status !== 'investment') {
-            return response()->json([
-                'success' => false,
-                'message' => 'This request is not an investment'
-            ], 403);
-        }
-
-        if (Gate::denies('viewshare', $share)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => new MyShareResource($share)
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error fetching share: ' . $e->getMessage(), [
-            'share_id' => $id
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong'
-        ], 500);
     }
-}
 
-public function getContract($id): JsonResponse
-{
-    try {
-        $share = RequestModel::find($id);
+    public function getContract($id): JsonResponse
+    {
+        try {
+            $share = RequestModel::find($id);
 
-        if (!$share) {
+            if (!$share) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Share not found'
+                ], 404);
+            }
+
+            if ($share->status !== 'investment') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This request is not an investment'
+                ], 403);
+            }
+
+            if (Gate::denies('viewshare', $share)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            if (!$share->contract || !file_exists(storage_path('app/public/' . $share->contract))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Contract file not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'contract_url' => asset('storage/' . $share->contract)
+
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching share contract', [
+                'share_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Share not found'
-            ], 404);
+                'message' => 'Something went wrong'
+            ], 500);
         }
-
-        if ($share->status !== 'investment') {
-            return response()->json([
-                'success' => false,
-                'message' => 'This request is not an investment'
-            ], 403);
-        }
-
-        if (Gate::denies('viewshare', $share)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        if (!$share->contract || !file_exists(storage_path('app/public/' . $share->contract))) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Contract file not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'contract_url' => asset('storage/' . $share->contract)
-            
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error fetching share contract', [
-            'share_id' => $id,
-            'error' => $e->getMessage()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong'
-        ], 500);
     }
-}
 
-public function allShares(): JsonResponse
-{
-    try {
-        $user = Auth::user();
+    public function allShares(): JsonResponse
+    {
+        try {
+            $user = Auth::user();
 
-        if (!$user->isAdmin()) {
+            if (!$user->isAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            $shares = RequestModel::with(['poperitys', 'user'])
+                ->where('status', 'investment')
+                ->latest()
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'shares' => MyShareResource::collection($shares),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching all shares: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
+                'message' => 'Error fetching shares'
+            ], 500);
         }
-
-        $shares = RequestModel::with(['poperitys', 'user'])
-            ->where('status', 'investment')
-            ->latest()
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'shares' => MyShareResource::collection($shares),
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Error fetching all shares: ' . $e->getMessage());
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Error fetching shares'
-        ], 500);
     }
-}
-
 }

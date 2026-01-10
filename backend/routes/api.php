@@ -93,4 +93,6 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/monthly', [ReportController::class, 'generateMonthlyReport']);
         
     });
+  
 });
+ 

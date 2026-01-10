@@ -10,4 +10,7 @@ enum NotificationType: string
     case CONTRACT_UPLOADED = 'contract_uploaded';
     case REQUEST_PENDING_APPROVAL = 'request_pending_approval';
     case PROPERTY_APPROVED = 'property_approved';
+    case PAYMENT_AUTHORIZED = 'payment_authorized';
+    case PAYMENT_CAPTURED = 'payment_captured';
+    case PAYMENT_CANCELED = 'payment_canceled';
 }

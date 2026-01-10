@@ -7,6 +7,8 @@ use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use App\Notifications\GenericNotification;
+use App\Enums\NotificationType;
 
 class PaymentController extends Controller
 {
@@ -54,11 +56,11 @@ class PaymentController extends Controller
         // إنشاء PaymentIntent باستخدام بطاقة الاختبار لتجنب held
         $intent = PaymentIntent::create([
             'amount' => 1000,
-    'currency' => 'usd',
-    'automatic_payment_methods' => [
-        'enabled' => true,
-        'allow_redirects' => 'never',
-    ],
+            'currency' => 'usd',
+            'automatic_payment_methods' => [
+                'enabled' => true,
+                'allow_redirects' => 'never',
+            ],
         ]);
 
         // إنشاء سجل الدفع في DB
@@ -71,7 +73,21 @@ class PaymentController extends Controller
             'payment_status' => 'pending',
             'balance' => $amount,
         ]);
+        $buyer = $requestItem->user;
+        $seller = $requestItem->poperitys->user;
+        $url = "/user/requests/{$requestItem->id}";
 
+        $buyer->notify(new GenericNotification(
+            "Amount of {$amount} USD has been authorized for the transaction - Waiting for contract confirmation",
+            $url,
+            NotificationType::PAYMENT_AUTHORIZED
+        ));
+
+        $seller->notify(new GenericNotification(
+            "Amount of {$amount} USD has been authorized for the transaction - Waiting for contract upload",
+            $url,
+            NotificationType::PAYMENT_AUTHORIZED
+        ));
         return response()->json([
             'success' => true,
             'client_secret' => $intent->client_secret,
@@ -107,7 +123,7 @@ class PaymentController extends Controller
         }
 
         try {
-            DB::transaction(function() use ($payment, $paymentIntent, $requestItem) {
+            DB::transaction(function () use ($payment, $paymentIntent, $requestItem) {
                 // التقاط المبلغ من Stripe
                 $paymentIntent->capture();
 
@@ -134,7 +150,21 @@ class PaymentController extends Controller
                     $seller->budget = ($seller->budget ?? 0) + $balance;
                     $seller->save();
                 }
+                $url = "/user/requests/{$requestItem->id}";
+
+                $buyer->notify(new GenericNotification(
+                    "Amount of {$balance} USD has been successfully deducted - Transaction completed",
+                    $url,
+                    NotificationType::PAYMENT_CAPTURED
+                ));
+
+                $seller->notify(new GenericNotification(
+                    "Amount of {$balance} USD has been deposited to your account - Transaction completed",
+                    $url,
+                    NotificationType::PAYMENT_CAPTURED
+                ));
             });
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -155,27 +185,45 @@ class PaymentController extends Controller
     /**
      * إلغاء الدفع إذا تغيرت حالة الطلب
      */
-  public static function handlePaymentOnStatusChange(RequestModel $requestItem)
-{
-    
-    $payment = Payment::where('request_id', $requestItem->id)
-        ->where('status', 'authorized')
-        ->first();
+    public static function handlePaymentOnStatusChange(RequestModel $requestItem)
+    {
 
-    if (!$payment) return;
+        $payment = Payment::where('request_id', $requestItem->id)
+            ->where('status', 'authorized')
+            ->first();
 
-    Stripe::setApiKey(config('services.stripe.secret'));
+        if (!$payment) return;
 
-    try {
-        $intent = PaymentIntent::retrieve($payment->stripe_intent_id);
-        $intent->cancel();
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-        $payment->update([
-            'status' => 'canceled',
-            'payment_status' => 'canceled'
-        ]);
-    } catch (\Exception $e) {
-        // تسجيل الخطأ أو تجاهله حسب الحاجة
+        try {
+            $intent = PaymentIntent::retrieve($payment->stripe_intent_id);
+            $intent->cancel();
+
+            $payment->update([
+                'status' => 'canceled',
+                'payment_status' => 'canceled'
+            ]);
+
+            $seller = $requestItem->poperitys->user;
+            $url = "/user/requests/{$requestItem->id}";
+
+            if ($buyer) {
+                $buyer->notify(new GenericNotification(
+                    "Payment authorization has been canceled - Request was rejected",
+                    $url,
+                    NotificationType::PAYMENT_CANCELED
+                ));
+            }
+            if ($seller) {
+                $seller->notify(new GenericNotification(
+                    "Payment authorization has been canceled - Request was rejected",
+                    $url,
+                    NotificationType::PAYMENT_CANCELED
+                ));
+            }
+        } catch (\Exception $e) {
+            // تسجيل الخطأ أو تجاهله حسب الحاجة
+        }
     }
-}
 }
