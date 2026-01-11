@@ -13,15 +13,19 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-    $table->foreignId('request_id')->constrained('requests')->cascadeOnDelete();
-    $table->decimal('amount_usd', 10, 2);
-    $table->decimal('platform_fee_usd', 10, 2);
-    $table->string('stripe_intent_id');
-    $table->enum('status', ['authorized', 'canceled',
-        'captured',
-        'failed'])->default('authorized');
-        $table->integer('balance');
-    $table->timestamps();
+            $table->foreignId('request_id')->constrained('requests')->cascadeOnDelete();
+            $table->decimal('amount_usd', 10, 2);
+            $table->decimal('platform_fee_usd', 10, 2);
+            $table->string('stripe_intent_id');
+            $table->enum('status', [
+                'authorized',
+                'canceled',
+                'captured',
+                'failed',
+                'paid'
+            ])->default('authorized');
+            $table->integer('balance');
+            $table->timestamps();
         });
     }
 

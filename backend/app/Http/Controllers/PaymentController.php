@@ -207,7 +207,7 @@ class PaymentController extends Controller
 
             $seller = $requestItem->poperitys->user;
             $url = "/user/requests/{$requestItem->id}";
-
+            $buyer = $requestItem->user;
             if ($buyer) {
                 $buyer->notify(new GenericNotification(
                     "Payment authorization has been canceled - Request was rejected",
