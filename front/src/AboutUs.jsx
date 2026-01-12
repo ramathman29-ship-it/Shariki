@@ -1,4 +1,6 @@
 import { Link, NavLink } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import "./AboutUs.css";
 
 export default function  AboutUS({
@@ -8,6 +10,9 @@ export default function  AboutUS({
     <>
       
 
+      <section className="text-center py-5 bg-secondary text-white landing">
+        <h1 className="landing1">Welcome To Shariki</h1>
+      </section>
       <section className="container-fluid py-5 text-center">
         <div className="row g-4">
           <div className="col-md-4">
