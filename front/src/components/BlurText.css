@@ -1,0 +1,16 @@
+.blur-text-h1 {
+  font-size: 6rem; /* حجم H1 تقريبي، فيك تعدل حسب الحاجة */
+  font-weight: bold;
+  color: #f1e0e0; /* أبيض */
+  text-align: center; /* نص بالمنتصف أفقياً */
+  width: 100%;
+  margin-left: 47%; /* يثبت النص بالمنتصف */
+  display: block; /* ضروري لـ text-align */
+}
+
+/* للنسخ الصغيرة على الشاشات */
+@media (max-width: 768px) {
+  .blur-text-h1 {
+    font-size: 2rem;
+  }
+}

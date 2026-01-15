@@ -1,6 +1,7 @@
 import { Pagination, Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import CurvedLoop from "../../components/CurvedLoop"
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import { Link } from "react-router-dom";
@@ -198,7 +199,7 @@ export default function Intro() {
 
         <div className="intro-swiper">
           <Swiper
-            slidesPerView={3} 
+            slidesPerView={3}
             spaceBetween={30}
             modules={[Pagination, Autoplay]}
             pagination={{ clickable: true }}
@@ -255,10 +256,10 @@ export default function Intro() {
           ))}
         </div>
 
-    
+
       </div>
 
-     
+      {/* <CurvedLoop marqueeText="get inspaerd with SHARIKI ✦" /> */}
 
       <div className="area my-5">
         <h2 className="my-5">Shop houses by Area</h2>
@@ -276,7 +277,7 @@ export default function Intro() {
             <div className="col-lg-3 col-md-4 col-sm-6" key={i}>
               <div className="u h-100 rounded overflow-hidden">
                 <img className="img5 img-fluid" src={home.img} alt="house" />
-                <h4 className="position-absolute bottom-0 start-50 translate-middle-x bg-white p-2 rounded-pill shadow-sm">
+                <h4 className="position-absolute bottom-200 start-50 translate-middle-x bg-white p-2 rounded-pill shadow-sm">
                   {home.area}
                 </h4>
               </div>

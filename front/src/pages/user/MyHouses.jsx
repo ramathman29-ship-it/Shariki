@@ -1,159 +1,246 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Button, ListGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Modal,
+} from "react-bootstrap";
+import "../../style/MyHouses.css";
 
 function MyHouses() {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
+  const [activeTab, setActiveTab] = useState("properties");
   const [properties, setProperties] = useState([]);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [shares, setShares] = useState([]);
+
+  const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedShare, setSelectedShare] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
+
+  const fixImagePath = (path) => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    return `http://127.0.0.1:8000/${path}`;
+  };
+
+  /* ===================== FETCH DATA ===================== */
+
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/propertiesforuser", {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-     })
-      .then(res => res.json())
-      .then(data => {
-        setProperties(data.properties ||[]);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const fetchPropertyDetails = (propertyId) => {
-    fetch(`http://127.0.0.1:8000/api/propertyforuser/${propertyId}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
-      .then(data => {
-        console.log("تفاصيل العقار:", data);
-        setSelectedProperty(data.property);
-      })
-      .catch(err => console.error("Error:", err));
-
-  };
+      .then((res) => res.json())
+      .then((data) => setProperties(data.properties || []));
+  }, []);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/user/myShares`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+    fetch("http://127.0.0.1:8000/api/user/myShares", {
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
-      .then(data => {
-        setShares(data.shares || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        setLoading(false);
-      });
+      .then((res) => res.json())
+      .then((data) => setShares(data.shares || []));
   }, []);
 
+  /* ===================== DELETE PROPERTY ===================== */
 
-  const fetchShareDetails = (shareId) => {
-    fetch(`http://127.0.0.1:8000/api/user/myShares/${shareId}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("تفاصيل الحصص:", data);
-        setSelectedShare(data.share);
-      })
-      .catch(err => console.error("Error:", err));
+  const handleDeleteProperty = async () => {
+    if (!selectedProperty) return;
+
+    const confirmDelete = window.confirm(
+      "هل أنت متأكد من حذف هذا العقار؟ لا يمكن التراجع عن هذه العملية."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/properties/${selectedProperty.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setProperties((prev) =>
+        prev.filter((p) => p.id !== selectedProperty.id)
+      );
+
+      setShowPropertyModal(false);
+      setSelectedProperty(null);
+    } catch (err) {
+      alert("فشل حذف العقار");
+    }
   };
 
-
-  if (loading) return <p>جاري التحميل...</p>;
+  /* ===================== UI ===================== */
 
   return (
-    <Container className="mt-4">
+    <Container className="myhouses-page">
+      <span className="back-arrow" onClick={() => navigate(-1)}>←</span>
+      <h2 className="page-title">عقاراتي</h2>
 
-      <h3 className="mb-3 text-center">My real Estate | عقاراتي</h3>
+      {/* Tabs */}
+      <div className="filter-tabs">
+        <button
+          className={activeTab === "properties" ? "filter-btn active" : "filter-btn"}
+          onClick={() => setActiveTab("properties")}
+        >
+          عقاراتي
+        </button>
+        <button
+          className={activeTab === "shares" ? "filter-btn active" : "filter-btn"}
+          onClick={() => setActiveTab("shares")}
+        >
+          حصصي
+        </button>
+      </div>
 
-      <Row>
-        {properties.map((prop) => (
-          <Col md={4} key={prop.id} className="mb-3">
-            <Card className="shadow-sm">
-              <Card.Body>
-                <Card.Title>{prop.address}</Card.Title>
-                <Card.Text>الموقع {prop.location}</Card.Text>
-
+      {/* ===================== PROPERTIES ===================== */}
+      {activeTab === "properties" && (
+        <Row className="mt-4">
+          {properties.map((prop) => (
+            <Col md={4} key={prop.id} className="mb-4">
+              <Card className="property-card">
+                <Card.Body>
+                  <Card.Title>{prop.address}</Card.Title>
+                  <Card.Text>{prop.location}</Card.Text>
+                </Card.Body>
                 <Button
-                  variant="primary"
-                  onClick={() => fetchPropertyDetails(prop.id)}
+                  className="card-btn"
+                  onClick={() => {
+                    setSelectedProperty(prop);
+                    setShowPropertyModal(true);
+                  }}
                 >
                   عرض التفاصيل
                 </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-
-      {/* PROPERTY DETAILS + SHARES */}
-      {selectedProperty && (
-        <Card className="p-3 mt-4 shadow">
-          <h4>تفاصيل العقار</h4>
-
-          <p><strong>العنوان</strong> {selectedProperty.address}</p>
-          <p><strong>الموقع</strong> {selectedProperty.location}</p>
-          <p><strong>السعر</strong> {selectedProperty.price}</p>
-          <p><strong>الحالة</strong> {selectedProperty.status}</p>
-          <p><strong>النسبة المتاحة</strong> {selectedProperty.available_percentage}%</p>
-
-          <h5 className="mt-4">الحصص </h5>
-          {shares.length === 0 ? (
-            <p className="text-muted">لا يوجد حصص لهذا العقار.</p>
-          ) : (
-            <ListGroup>
-              {shares.map((share) => (
-                <ListGroup.Item key={share.id} className="d-flex justify-content-between align-items-center">
-                  <span>
-                    عدد الأسهم: {share.share_amount} — رقم العقار: {share.property}
-                  </span>
-                  <Button
-                    variant="success"
-                    size="sm"
-                    onClick={() => fetchShareDetails(share.id)}
-                  >
-                    عرض تفاصيل الحصة
-                  </Button>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-
-          )}
-          {/* SHARE DETAILS */}
-          {selectedShare && (
-            <Card className="p-3 mt-3">
-              <h5>تفاصيل الحصة</h5>
-
-              <p><strong>عدد الأسهم:</strong> {selectedShare.share_amount}</p>
-              <p><strong>العقد:</strong> {selectedShare.contract}</p>
-              <p><strong>العقار:</strong> {selectedShare.property}</p>
-              <p><strong>تاريخ التقديم:</strong> {selectedShare["submission date"]}</p>
-            </Card>
-
-          )}
-        </Card>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       )}
 
+      {/* ===================== SHARES ===================== */}
+      {activeTab === "shares" && (
+        <Row className="mt-4">
+          {shares.map((share) => (
+            <Col md={4} key={share.id} className="mb-4">
+              <Card className="property-card">
+                <Card.Body>
+                  <Card.Title>نسبة الحصة: {share.share_amount}%</Card.Title>
+                  <Card.Text>{share.property.address}</Card.Text>
+                </Card.Body>
+                <Button
+                  className="card-btn"
+                  onClick={() => {
+                    setSelectedShare(share);
+                    setShowShareModal(true);
+                  }}
+                >
+                  عرض التفاصيل
+                </Button>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+
+      {/* ===================== PROPERTY MODAL ===================== */}
+      <Modal
+        show={showPropertyModal}
+        onHide={() => setShowPropertyModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>تفاصيل العقار</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-content-custom">
+          {selectedProperty && (
+            <>
+              <p><strong>العنوان:</strong> {selectedProperty.address}</p>
+              <p><strong>الموقع:</strong> {selectedProperty.location}</p>
+              <p><strong>السعر:</strong> {selectedProperty.price}</p>
+              <p><strong>الحالة:</strong> {selectedProperty.status}</p>
+              <p>
+                <strong>النسبة المتاحة:</strong>{" "}
+                {selectedProperty.available_percentage}%
+              </p>
+
+              {selectedProperty.status === "view" && (
+                <Button
+                  variant="danger"
+                  className="w-100 mt-3"
+                  onClick={handleDeleteProperty}
+                >
+                  حذف العقار
+                </Button>
+              )}
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      {/* ===================== SHARE MODAL ===================== */}
+      <Modal
+        show={showShareModal}
+        onHide={() => setShowShareModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>تفاصيل الحصة</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-content-custom">
+          {selectedShare && (
+            <>
+              <p><strong>نسبة الحصة:</strong> {selectedShare.share_amount}%</p>
+              <p><strong>تاريخ التقديم:</strong> {selectedShare["submission date"]}</p>
+              <hr />
+              <p><strong>العقار:</strong> {selectedShare.property.address}</p>
+              <p><strong>الموقع:</strong> {selectedShare.property.location}</p>
+
+              {selectedShare.contract && (
+                <Button
+                  className="card-btn mt-3"
+                  onClick={() => setShowContractModal(true)}
+                >
+                  عرض العقد
+                </Button>
+              )}
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      {/* ===================== CONTRACT MODAL ===================== */}
+      <Modal
+        show={showContractModal}
+        onHide={() => setShowContractModal(false)}
+        size="lg"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>صورة العقد</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <img
+            src={fixImagePath(selectedShare?.contract)}
+            alt="contract"
+            className="contract-image"
+          />
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }

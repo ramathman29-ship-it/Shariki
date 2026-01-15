@@ -1,61 +1,86 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "./Images/Shariki.png";
-import img1 from "./Images/images.png";
-import img2 from "./Images/diamond.png";
-import img3 from "./Images/100.png";
-import painter from "./Images/painter.png";
-import diamond from "./Images/101.jfif";
-import world from "./Images/pngtree-mount.jpg";
-import webdesign from "./Images/mountains.jpg";
-import aboutImg from "./Images/about.jpg";
-import port1 from "./Images/portfolio-1.jpg";
-import port2 from "./Images/portfolio-2.jpg";
-import port3 from "./Images/portfolio-3.jpg";
-import port4 from "./Images/102.png";
-import port5 from "./Images/103.webp";
-import port6 from "./Images/104.jpeg";
-import port7 from "./Images/106.webp";
-import port8 from "./Images/105.jpg";
-import port9 from "./Images/107.jpg";
-import port10 from "./Images/108.webp";
-import port11 from "./Images/108.jpg";
-import port12 from "./Images/109.webp";
-import AboutUs from "./AboutUs";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./component/Layout";
+import Login from "./pages/main/Login";
+import NotFound from "./pages/main/NotFound";
+import MyHouses from "./pages/user/MyHouses";
+import Houses from "./pages/main/Houses";
+import Intro from "./pages/main/Intro";
+import Sell from "./pages/main/Sell";
+import AboutUs from "./pages/main/AboutUs";
+import UserRequests from "./pages/user/UserRequests";
+import HouseDetails from "./pages/main/HouseDetails";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProtectedRoute from "./component/ProtectedRoute";
+import UserAccount from "./pages/user/UserAccount";
+import SellRequest from "./pages/admin/SellRequest"; // طلبات الشراء
+import PublishRequest from "./pages/admin/PublishRequest"; // طلبات النشر
+import ClickSpark from "./components/ClickSpark";
+import Reports from "./pages/admin/Reports"
+import "./style/App.css";
 
-function App() {
+
+export default function App() {
   return (
-    <>
-      <AboutUs
-        logo={logo}
-        img1={img1}
-        img2={img2}
-        img3={img3}
-        painter={painter}
-        diamond={diamond}
-        world={world}
-        webdesign={webdesign}
-        aboutImg={aboutImg}
-        port1={port1}
-        port2={port2}
-        port3={port3}
-        port4={port4}
-        port5={port5}
-        port6={port6}
-        port7={port7}
-        port8={port8}
-        port9={port9}
-        port10={port10}
-        port11={port11}
-        port12={port12}
-      />
-      {/* <AboutUs/> */}
-      
-    </>
+    <ClickSpark
+      sparkColor="#220c0cff"
+      sparkSize={10}
+      sparkRadius={18}
+      sparkCount={10}
+      duration={450}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Intro />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          </Route>
+          <Route path="/admin/reports" element={<Reports />} />
+          <Route path="/houses" element={<Houses />} />
+          <Route path="/Admin" element={<PublishRequest />} />
+          <Route path="/Admin2" element={<SellRequest />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/useraccount" element={<UserAccount />} />
+          <Route path="/houses/:id" element={<HouseDetails />} />
+
+          <Route
+            path="/myRequests"
+            element={
+              <ProtectedRoute>
+                <UserRequests />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/AdminDashbored"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/sellyourHouse"
+            element={
+              <ProtectedRoute>
+                <Sell />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/host"
+            element={
+              <ProtectedRoute>
+                <MyHouses />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ClickSpark>
   );
 }
-
-export default App;

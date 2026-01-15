@@ -1,24 +1,27 @@
+/* ================= AUTH PAGE ================= */
+
 .auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f6f5f7;
+  background: #f2ece6;
 }
 
 .auth-container {
   background-color: #ffffff;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-              0 10px 10px rgba(0, 0, 0, 0.22);
+    0 10px 10px rgba(0, 0, 0, 0.22);
   position: relative;
   overflow: hidden;
-  width: 1000px;
+ width: 900px;
   max-width: 95%;
-  min-height: 650px;
+  min-height: 620px;
 }
 
-/* === داخل الفورم === */
+/* ================= FORMS ================= */
+
 .form-container {
   position: absolute;
   top: 0;
@@ -39,7 +42,10 @@
   z-index: 1;
 }
 
-.auth-container.right-panel-active .sign-in-container { transform: translateX(100%); }
+.auth-container.right-panel-active .sign-in-container {
+  transform: translateX(100%);
+}
+
 .auth-container.right-panel-active .sign-up-container {
   transform: translateX(100%);
   opacity: 1;
@@ -47,13 +53,25 @@
   animation: show 0.6s;
 }
 
-/* === حركة الأنميشن === */
+/* ================= ANIMATION ================= */
+
 @keyframes show {
-  0%, 49.99% { opacity: 0; z-index: 1; }
-  50%, 100% { opacity: 1; z-index: 5; }
+
+  0%,
+  49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
 }
 
-/* === Overlay === */
+/* ================= OVERLAY ================= */
+
 .overlay-container {
   position: absolute;
   top: 0;
@@ -64,11 +82,13 @@
   transition: transform 0.6s ease-in-out;
   z-index: 100;
 }
-.auth-container.right-panel-active .overlay-container { transform: translateX(-100%); }
+
+.auth-container.right-panel-active .overlay-container {
+  transform: translateX(-100%);
+}
 
 .overlay {
   background: linear-gradient(to right, #454239, #27200f);
-  background-size: cover;
   color: #fff;
   position: relative;
   left: -100%;
@@ -76,7 +96,10 @@
   width: 200%;
   transition: transform 0.6s ease-in-out;
 }
-.auth-container.right-panel-active .overlay { transform: translateX(50%); }
+
+.auth-container.right-panel-active .overlay {
+  transform: translateX(50%);
+}
 
 .overlay-panel {
   position: absolute;
@@ -84,30 +107,184 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 40px;
+  padding: 0 50px;
   text-align: center;
-  top: 0;
   height: 100%;
   width: 50%;
-  transition: transform 0.6s ease-in-out;
 }
-.overlay-left { transform: translateX(-20%); }
-.auth-container.right-panel-active .overlay-left { transform: translateX(0); }
-.overlay-right { right: 0; transform: translateX(0); }
-.auth-container.right-panel-active .overlay-right { transform: translateX(20%); }
 
-/* === عناصر جديدة بدل inline === */
+.overlay-panel h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* RTL helper: add `rtl` class on .auth-page to flip some layouts */
+.auth-page.rtl {
+  direction: rtl;
+}
+.auth-page.rtl .input-group label {
+  text-align: left;
+}
+
+@media (max-width: 800px) {
+  .auth-container {
+    width: 100%;
+    border-radius: 10px;
+    min-height: 720px;
+  }
+
+  .sign-in-container,
+  .sign-up-container,
+  .overlay-container {
+    position: relative;
+    left: 0 !important;
+    width: 100% !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .overlay {
+    display: none;
+  }
+
+  form {
+    padding: 20px;
+  }
+}
+
+.overlay-panel p {
+  font-size: 15px;
+  line-height: 22px;
+  opacity: 0.9;
+}
+
+/* ================= FORM ================= */
+
+form {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 40px 50px;
+  height: 100%;
+  overflow-y: auto;
+  row-gap: 24px; /* vertical spacing between form rows */
+}
+
+/* ================= INPUT GROUP ================= */
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px; /* increased vertical spacing */
+  flex-wrap: wrap;
+  /* المسافة بين كل إنبوت */
+}
+
+.input-group label {
+  min-width: 110px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: #454239;
+}
+
+/* ================= INPUTS ================= */
+
+input,
+select {
+  height: 50px;
+  /* ارتفاع الإنبوت */
+  width: 100%;
+  max-width: 360px;
+  /* عرض الإنبوت */
+  margin-top: 12px; /* slightly larger top margin for clearer spacing */
+
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  /* لون الحدود رمادي */
+  border-radius: 10px;
+
+  font-size: 14px;
+  color: #333;
+
+  transition: all 0.25s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #999;
+  /* رمادي أغمق عند التركيز */
+  background-color: #ffffff;
+}
+
+/* ================= PHONE ================= */
+
 .phone-group {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   width: 100%;
-  margin-top: 8px;
 }
-.country-code { width: 30%; padding: 12px; border-radius: 8px; }
-.phone-input { width: 70%; }
-.login-fields { margin-top: 90px; width: 100%; }
-.login-btn { margin-top: 20px; }
-.error-text { color: red; margin-top: 10px; }
+
+/* ================= BUTTONS ================= */
+
+button {
+  margin-top: 18px;
+  width: 100%;
+  height: 48px;
+
+  border-radius: 999px;
+  border: none;
+
+  background-color: #27200f;
+  /* dark brown */
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:focus {
+  outline: 3px solid rgba(39,32,15,0.18);
+  outline-offset: 2px;
+}
+
+button.ghost {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+}
+
+/* ================= TEXT ================= */
+
+h1 {
+  font-weight: bold;
+  margin: 0;
+}
+
+p {
+  font-size: 14px;
+  margin: 15px 0;
+}
+
+span {
+  font-size: 12px;
+}
+
+/* ================= FOOTER ================= */
 
 footer {
   background-color: #454239;
@@ -118,124 +295,45 @@ footer {
   width: 100%;
 }
 
-.not-found-container h1{
-  margin-top: 20px;
-  text-align: center;  
-}
-.super-button {
-  margin-top: 20px;
-  margin-left: 43%;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 14px 28px;
-  background: linear-gradient(145deg, #0f0f0f, #1c1c1c);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 100px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.4s ease-in-out;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  z-index: 1;
+/* ================= ERROR ================= */
+
+.error-text {
+  color: #b00020;
+  margin-top: 10px;
 }
 
-.super-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, #00ffff, #ff00ff, #00ffff);
-  animation: rotate 4s linear infinite;
-  z-index: -2;
-}
-
-.super-button::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  background: #0a0a0a;
-  border-radius: inherit;
-  z-index: -1;
-}
-
-.super-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
-}
-
-.super-button:hover .arrow {
-  transform: translateX(6px);
-}
-
-.arrow {
-  width: 22px;
-  height: 22px;
-  transition: transform 0.3s ease-in-out;
-  color: #00ffff;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-h1 { font-weight: bold; margin: 0; }
-p { font-size: 14px; font-weight: 100; line-height: 20px; letter-spacing: 0.5px; margin: 20px 0 30px; }
-span { font-size: 12px; }
-
-/* === الأزرار === */
-button {
-  border-radius: 20px;
-  border: 1px solid #454239;
-  background-color: #454239;
-  color: #fff;
-  font-size: 12px;
+.toast-box {
+  position: fixed;
+  top: 30px;
+  right: -400px;
+  min-width: 280px;
+  padding: 14px 20px;
+  border-radius: 10px;
   font-weight: bold;
-  padding: 12px 45px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: transform 80ms ease-in;
-  cursor: pointer;
+  z-index: 9999;
+  animation: slideIn 0.5s forwards, slideOut 0.5s forwards 3.5s;
 }
-button:active { transform: scale(0.95); }
-button:focus { outline: none; }
-button.ghost { background-color: transparent; border-color: #fff; }
 
-/* === الفورم === */
-form {
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 30px 50px;
-  height: 100%;
-  text-align: center;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+/* SUCCESS */
+.toast-box.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 6px solid #2e7d32;
 }
-form::-webkit-scrollbar { width: 6px; }
-form::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
 
-input, select {
-  background-color: #eee;
-  border: none;
-  padding: 12px 15px;
-  margin: 8px 0;
-  width: 100%;
-  border-radius: 8px;
+/* ERROR */
+.toast-box.error {
+  background: #fdecea;
+  color: #c62828;
+  border-left: 6px solid #c62828;
+}
+
+@keyframes slideIn {
+  from { right: -400px; }
+  to { right: 30px; }
+}
+
+@keyframes slideOut {
+  from { right: 30px; }
+  to { right: -400px; }
 }

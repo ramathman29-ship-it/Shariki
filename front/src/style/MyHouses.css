@@ -1,0 +1,158 @@
+/* ===== Page Layout ===== */
+.myhouses-page {
+  min-height: 100vh;
+  padding-top: 40px;
+  padding-bottom: 60px;
+  font-family: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  direction: rtl; /* default Arabic */
+}
+body{
+  background-color: #f2ece6;
+}
+.myhouses-page.ltr {
+  direction: ltr; /* English version */
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #111;
+  text-align: right; /* Arabic default */
+}
+
+.myhouses-page.ltr .page-title {
+  text-align: left; /* English */
+}
+
+/* ===== Filter Tabs ===== */
+.filter-tabs {
+  width: 500px;
+  display: flex;
+  gap: 14px;
+  justify-content: flex-start;
+  margin-bottom: 35px;
+}
+
+.myhouses-page.ltr .filter-tabs {
+  flex-direction: row;
+}
+
+.myhouses-page:not(.ltr) .filter-tabs {
+  flex-direction: row-reverse;
+}
+
+.filter-btn {
+  padding: 10px 28px;
+  border-radius: 30px;
+  border: 1.5px solid #222;
+  background: transparent;
+  color: #222;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: #222;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background: #222;
+  color: #fff;
+}
+
+/* ===== Cards ===== */
+.property-card {
+  height: 100%;
+  min-height: 230px;
+  border-radius: 16px;
+  border: none;
+  background: #fff;
+  box-shadow: 6px 10px 25px rgba(0, 0, 0, 0.12);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  transition: all 0.3s ease;
+}
+
+.property-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 10px 16px 35px rgba(0, 0, 0, 0.18);
+}
+
+.property-card .card-body {
+  text-align: left;
+  padding: 20px;
+}
+
+.myhouses-page.ltr .property-card .card-body {
+  text-align: left;
+}
+
+.property-card .card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.property-card .card-text {
+  font-size: 15px;
+  color: #444;
+}
+
+/* ===== Card Button ===== */
+.card-btn {
+  width: 100%;
+  border-radius: 0 0 16px 16px;
+  background: #1f1f1f;
+  border: none;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  text-align: center;
+}
+
+.card-btn:hover {
+  background: #000;
+}
+
+/* ===== Modals ===== */
+.modal-content-custom p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: right;
+}
+
+.myhouses-page.ltr .modal-content-custom p {
+  text-align: right;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: 700;
+  font-size: 18px;
+  text-align: right;
+}
+
+.myhouses-page.ltr .modal-title {
+  text-align: left;
+}
+
+/* ===== Contract Image ===== */
+.contract-image {
+  width: 100%;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 12px;
+}

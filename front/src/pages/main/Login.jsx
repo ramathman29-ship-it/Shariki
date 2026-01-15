@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../style/login.css"
+import "../../style/login.css";
 
 const countries = [
   { name: "Saudi Arabia", code: "+966" },
   { name: "USA", code: "+1" },
   { name: "Egypt", code: "+20" },
   { name: "UK", code: "+44" },
-  { name: "Syria", code: "+963" },
+  { name: "Syrian", code: "+963" },
 ];
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
@@ -23,36 +27,37 @@ export default function Login() {
     gender: "",
     birthday: "",
     mobile1: "",
-    nationality: countries[0].name,
+    nationality: "Syrian",
     job: "",
     residency: "",
-    budget: "",
+    budget: "0",
   });
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false }), 4000);
+  };
 
   useEffect(() => {
     const signUpButton = document.getElementById("signUp");
     const signInButton = document.getElementById("signIn");
     const container = document.getElementById("container");
 
-    const handleSignUp = () => container.classList.add("right-panel-active");
-    const handleSignIn = () => container.classList.remove("right-panel-active");
-
-    signUpButton.addEventListener("click", handleSignUp);
-    signInButton.addEventListener("click", handleSignIn);
-
-    return () => {
-      signUpButton.removeEventListener("click", handleSignUp);
-      signInButton.removeEventListener("click", handleSignIn);
-    };
+    signUpButton?.addEventListener("click", () =>
+      container.classList.add("right-panel-active")
+    );
+    signInButton?.addEventListener("click", () =>
+      container.classList.remove("right-panel-active")
+    );
   }, []);
 
-  // 🔹 تسجيل الدخول
+  // ================= LOGIN =================
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch("http://localhost:8000/api/login", {
@@ -62,63 +67,64 @@ export default function Login() {
       });
 
       const data = await res.json();
-      console.log("Login response:", data);
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
-      if (!res.ok) throw new Error(data.message  ||"Login failed");
-
-      // 🟢 التقاط التوكن (Token أو token)
       const token = data.token || data.Token;
-      if (!token) {
-        console.warn("⚠️ No token found in response!", data);
-      } else {
-        localStorage.setItem("token", token);
-        console.log("✅ Token saved:", token);
-      }
+      if (!token) throw new Error("No token received");
 
-      alert("Login successful!");
-      navigate(-1);
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", "user");
+      showToast("✅ تسجيل الدخول ناجح");
+
+      setTimeout(() => {
+        if (
+          loginData.email === "admin@example.com" &&
+          loginData.password === "Admin1234"
+        ) {
+          localStorage.setItem("role", "admin");
+          navigate("/AdminDashbored", { replace: true });
+        } else {
+          localStorage.setItem("role", "user");
+          navigate("/", { replace: true });
+        }
+      }, 2000);
+
     } catch (err) {
-      console.error(err);
-      setError(err.message);
+      showToast(err.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 التسجيل مع تسجيل دخول تلقائي
+  // ================= REGISTER =================
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (registerData.password.length < 9)
+      return showToast("❌ كلمة المرور يجب أن تكون 9 محارف على الأقل", "error");
+
+    if (registerData.password !== registerData.password_confirmation)
+      return showToast("❌ كلمتا المرور غير متطابقتين", "error");
+
+    if (Number(registerData.budget) < 0)
+      return showToast("❌ الميزانية يجب أن تكون صفر أو أكثر", "error");
+
     setLoading(true);
-    setError(null);
 
     try {
-      const payload = {
-        name: registerData.name,
-        email: registerData.email,
-        password: registerData.password,
-        password_confirmation: registerData.password_confirmation,
-        personal_id: registerData.personal_id,
-        gender: registerData.gender,
-        birthday: registerData.birthday,
-        mobile1: registerData.mobile1,
-        nationality: registerData.nationality,
-        job: registerData.job,
-        residency: registerData.residency,
-        budget: registerData.budget,
-      };
-
-      // 🟢 أولاً: إنشاء الحساب
       const res = await fetch("http://localhost:8000/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(registerData),
       });
 
       const data = await res.json();
-      console.log("Register response:", data);
-
       if (!res.ok) throw new Error(data.message || "Registration failed");
 
+      // AUTO LOGIN
       const loginRes = await fetch("http://localhost:8000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,145 +134,87 @@ export default function Login() {
         }),
       });
 
-      const loginData = await loginRes.json();
-      console.log("Auto-login response:", loginData);
+      const loginDataResp = await loginRes.json();
+      if (!loginRes.ok)
+        throw new Error(loginDataResp.message || "Auto login failed");
 
-      if (!loginRes.ok) throw new Error(loginData.message|| "Auto-login failed");const token = loginData.token || loginData.Token;
-      if (!token) {
-        console.warn("⚠️ No token found in auto-login response!", loginData);
-      } else {
-        localStorage.setItem("token", token);
-        console.log("✅ Token saved:", token);
-      }
+      const token = loginDataResp.token || loginDataResp.Token;
+      if (!token) throw new Error("No token received");
 
-      alert("Account created successfully!");
-      navigate(-1);
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", "user");
 
-      setRegisterData({
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
-        personal_id: "",
-        gender: "",
-        birthday: "",
-        mobile1: "",
-        nationality: countries[0].name,
-        job: "",
-        residency: "",
-        budget: "",
-      });
+      showToast("✅ تم إنشاء الحساب وتسجيل الدخول");
+      setTimeout(() => navigate("/", { replace: true }), 2000);
     } catch (err) {
-      console.error(err);
-      setError(err.message);
+      showToast(err.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container" id="container">
-        {/* 🔹 Sign Up Form */}
-        <div className="form-container sign-up-container">
-          <form onSubmit={handleRegister}>
-            <h1>Create Account</h1>
-            <span>Enter your details to register</span>
+    <>
+      <div className="auth-page">
+        <span className="back-arrow" onClick={() => navigate(-1)}>
+          ←
+        </span>
 
-            <input type="text" placeholder="Name"
-              value={registerData.name}
-              onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })} required />
+        <div className="auth-container" id="container">
+          {/* SIGN UP */}
+          <div className="form-container sign-up-container">
+            <form onSubmit={handleRegister}>
+              <h1>Create Account</h1>
 
-            <input type="email" placeholder="Email"
-              value={registerData.email}
-              onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })} required />
+              <input placeholder="Name" onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })} />
+              <input placeholder="Email" onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })} />
+              <input type="password" placeholder="Password" onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })} />
+              <input type="password" placeholder="Confirm Password" onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })} />
+              <input placeholder="Personal ID" onChange={(e) => setRegisterData({ ...registerData, personal_id: e.target.value })} />
+              <input placeholder="Mobile" onChange={(e) => setRegisterData({ ...registerData, mobile1: e.target.value })} />
+              <input placeholder="Job" onChange={(e) => setRegisterData({ ...registerData, job: e.target.value })} />
+              <input placeholder="Residency" onChange={(e) => setRegisterData({ ...registerData, residency: e.target.value })} />
+              <input type="date" onChange={(e) => setRegisterData({ ...registerData, birthday: e.target.value })} />
 
-            <input type="password" placeholder="Password"
-              value={registerData.password}
-              onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })} required />
+              <select onChange={(e) => setRegisterData({ ...registerData, gender: e.target.value })}>
+                <option value="">Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
 
-            <input type="password" placeholder="Confirm Password"
-              value={registerData.password_confirmation}
-              onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })} required />
+              <button disabled={loading}>
+                {loading ? "Creating..." : "Sign Up"}
+              </button>
+            </form>
+          </div>
 
-            <input type="number" placeholder="Personal ID"
-              value={registerData.personal_id}
-              onChange={(e) => setRegisterData({ ...registerData, personal_id: e.target.value })} />
+          {/* SIGN IN */}
+          <div className="form-container sign-in-container">
+            <form onSubmit={handleLogin}>
+              <h1>Sign in</h1>
+              <input placeholder="Email" onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} />
+              <input type="password" placeholder="Password" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
+              <button disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
+            </form>
+          </div>
 
-            <select value={registerData.gender}
-              onChange={(e) => setRegisterData({ ...registerData, gender: e.target.value })} required>
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-
-            <input type="date" placeholder="Birthday"
-              value={registerData.birthday}
-              onChange={(e) => setRegisterData({ ...registerData, birthday: e.target.value })} required />
-
-            <input type="tel" placeholder="Mobile"
-              value={registerData.mobile1}
-              onChange={(e) => setRegisterData({ ...registerData, mobile1: e.target.value })} required />
-
-            <select value={registerData.nationality}
-              onChange={(e) => setRegisterData({ ...registerData, nationality: e.target.value })} required>
-              {countries.map((country, index) => (
-                <option key={index} value={country.name}>{country.name}</option>
-              ))}
-            </select>
-
-            <input type="text" placeholder="Job"
-              value={registerData.job}
-              onChange={(e) => setRegisterData({ ...registerData, job: e.target.value })} required />
-
-            <input type="text" placeholder="Residency"
-              value={registerData.residency}
-              onChange={(e) => setRegisterData({ ...registerData, residency: e.target.value })} required />
-
-            <input type="number" placeholder="Budget (e.g. 9000)"
-              value={registerData.budget}
-              onChange={(e) => setRegisterData({ ...registerData, budget: e.target.value })} required />
-
-            {error && <p className="error-text">{error}</p>}
-            <button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Sign Up"}
-            </button>
-          </form>
-        </div>{/* 🔹 Sign In Form */}
-        <div className="form-container sign-in-container">
-          <form onSubmit={handleLogin}>
-            <h1>Sign in</h1>
-            <input type="email" placeholder="Email"
-              value={loginData.email}
-              onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} required />
-
-            <input type="password" placeholder="Password"
-              value={loginData.password}
-              onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} required />
-
-            <button type="submit" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-            {error && <p className="error-text">{error}</p>}
-          </form>
-        </div>
-
-        {/* 🔹 Overlay */}
-        <div className="overlay-container">
-          <div className="overlay">
-            <div className="overlay-panel overlay-left">
-              <h1>Welcome Back!</h1>
-              <p>To keep connected with us please login with your personal info</p>
-              <button className="ghost" id="signIn">Sign In</button>
-            </div>
-            <div className="overlay-panel overlay-right">
-              <h1>Hello, Friend!</h1>
-              <p>Enter your personal details and start your journey with us</p>
-              <button className="ghost" id="signUp">Sign Up</button>
+          {/* OVERLAY */}
+          <div className="overlay-container">
+            <div className="overlay">
+              <div className="overlay-panel overlay-left">
+                <h1>Welcome Back!</h1>
+                <button className="ghost" id="signIn">Sign In</button>
+              </div>
+              <div className="overlay-panel overlay-right">
+                <h1>Hello, Friend!</h1>
+                <button className="ghost" id="signUp">Sign Up</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {toast.show && <div className={`toast-box ${toast.type}`}>{toast.message}</div>}
+    </>
   );
 }

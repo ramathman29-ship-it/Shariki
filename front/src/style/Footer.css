@@ -1,5 +1,5 @@
 /* Footer always at bottom */
-html, body {
+/* html, body {
     height: 100%;
 }
 #root, .App {
@@ -12,19 +12,19 @@ footer {
     margin-top: auto;
     color: grey;
     background: #292929 !important;
-}
+} */
 
 /* Footer BG */
-.bg-grey {
+/* .bg-grey {
     background: #292929 !important;
 }
 
 .logo-footer {
     margin-bottom: 40px;
-}
+} */
 
 /* Typography */
-footer p,
+/* footer p,
 a {
     font-size: 12px;
     font-family: 'Roboto', sans-serif;
@@ -44,10 +44,10 @@ footer h6:after {
     height: 1px;
     left: 0;
     bottom: -20px;
-}
+} */
 
 /* Buttons */
-.btn-footer {
+/* .btn-footer {
     color: grey;
     text-decoration: none;
     border: 1px solid;
@@ -60,26 +60,26 @@ footer h6:after {
 .btn-footer:hover {
     text-decoration: none;
     color: #fff;
-}
+} */
 
 /* Newsletter Section BG (fix white box) */
-.newsletter-section {
+/* .newsletter-section {
     background: #292929 !important;
     padding: 15px 0;
 }
-
+ */
 
 
 /* Social Icons */
-.social .fa {
+/* .social .fa {
     color: grey;
     font-size: 22px;
     padding: 10px 15px;
     background: #3c3c3c;
-}
+} */
 
 /* Lists */
-footer ul li {
+/* footer ul li {
     list-style: none;
     display: block;
 }
@@ -96,10 +96,113 @@ footer ul li a {
 a:hover {
     text-decoration: none;
     color: #f5f5f5 !important;
-}
+} */
 
 /* Logo divider */
-.logo-part {
+/* .logo-part {
     border-right: 1px solid grey;
     height: 100%;
+} */
+
+
+.estate-footer {
+background: linear-gradient(180deg, #f1ece7, #ebe4dd);
+    padding: 80px 0 30px;
+    font-family: "Poppins", sans-serif;
+    color: #504234;
+}
+
+.footer-top {
+    margin-bottom: 50px;
+}
+
+/* Brand */
+.footer-brand h3 {
+    font-size: 28px;
+    color: #2f2a25;
+    margin-bottom: 15px;
+}
+
+.footer-brand h3 span {
+    color: #b89b72;
+}
+
+.footer-brand p {
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 320px;
+}
+
+.contact-info span {
+    display: block;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* Links */
+.footer-links h5,
+.footer-newsletter h5 {
+    color: #2f2a25;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links ul li {
+    margin-bottom: 12px;
+}
+
+.footer-links ul li a {
+    text-decoration: none;
+    color: #6f675f;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+    color: #b89b72;
+}
+
+/* Newsletter */
+.footer-newsletter p {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.footer-newsletter input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    border: 1px solid #ddd;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+.footer-newsletter button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    border: none;
+    background-color: #b89b72;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.footer-newsletter button:hover {
+    background-color: #a4875f;
+}
+
+/* Bottom */
+.footer-bottom {
+    border-top: 1px solid #5f3838;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: #8a8179;
 }

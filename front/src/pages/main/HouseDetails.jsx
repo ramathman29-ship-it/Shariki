@@ -1,24 +1,30 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "../../style/Sell.css"
 import "swiper/css/effect-fade";
 
 export default function HouseDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [house, setHouse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    message: "",
-    rate:""
-  });
+  const [formData, setFormData] = useState({ message: "", rate: "" });
 
+  // ===== Toast =====
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
-  // 🟢 جلب تفاصيل العقار من الـ API
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ ...toast, show: false }), 3000);
+  };
+
+  // ===== Fetch house details =====
   useEffect(() => {
     const fetchHouseDetails = async () => {
       try {
@@ -33,29 +39,21 @@ export default function HouseDetails() {
         setLoading(false);
       }
     };
-
     fetchHouseDetails();
   }, [id]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🟢 إرسال الطلب للباك (مع تعديل prp_id)
+  // ===== Submit request =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const orderData = {
-      prp_id: house.id,             // هاد هو اسم الحقل الصحيح
-      description: formData.message,
-      rate:formData.rate
-    };
+    const orderData = { prp_id: house.id, description: formData.message, rate: formData.rate };
 
     try {
-      const token = localStorage.getItem("token"); // لو الباك محتاج Authorization
+      const token = localStorage.getItem("token");
       const response = await fetch("http://127.0.0.1:8000/api/user/requests", {
         method: "POST",
         headers: {
@@ -64,23 +62,20 @@ export default function HouseDetails() {
         },
         body: JSON.stringify(orderData),
       });
-      console.log(token);
 
       if (!response.ok) throw new Error("Failed to send request");
 
       const result = await response.json();
-      console.log("✅ Request response:", result);
-
       if (result.success) {
-        alert(`✅ ${result.message}`);
+        showToast(result.message, "success");
         setShowModal(false);
-        setFormData({ message: "" });
+        setFormData({ message: "", rate: "" });
       } else {
-        alert("⚠️ Something went wrong, please try again.");
+        showToast("⚠️ Something went wrong, please try again.", "error");
       }
     } catch (error) {
       console.error("❌ Error submitting request:", error);
-      alert("Failed to submit request. Please try again later.");
+      showToast("Failed to submit request. Please try again later.", "error");
     }
   };
 
@@ -97,35 +92,47 @@ export default function HouseDetails() {
   if (!house) {
     return <h2 className="text-center mt-5">House not found 😢</h2>;
   }
+
   return (
     <div className="container">
-      <Link to="/houses">
-        <img className="m" src="/images/rr.png" alt="Back" />
-      </Link>
+      {/* Back button */}
+      <span className="back-arrow" onClick={() => navigate("/houses")}>←</span>
 
-      <div className={`details-card ${showModal ? "blurred" : ""}`}>
-        {house.images && house.images.length > 0 ? (
-          <Swiper
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-            modules={[Pagination]}
-          >
-            {house.images.map((img, index) => (
-              <SwiperSlide key={index}>
-                <img src={img} alt={house.address} className="details-image" />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        ) : (
-          <img
-            src="https://via.placeholder.com/600x400?text=No+Image"
-            alt="No image"
-            className="details-image"
-          />
-        )}
+      {/* ===== House Details ===== */}
+      <div className={`details-card ${showModal ? "blurred" : ""}`} style={{ display: "flex", gap: "30px", marginTop: "20px" }}>
+        
+        {/* LEFT: Swiper */}
+        <div className="details-left" style={{ flex: 1 }}>
+          {house.photos && house.photos.length > 0 ? (
+            <Swiper
+              slidesPerView={1}
+              pagination={{ clickable: true }}
+              modules={[Pagination]}
+              className="swiper-container"
+              style={{ width: "100%", height: "400px", borderRadius: "10px" }}
+            >
+              {house.photos.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={img.replace(/\\/g, "")}
+                    alt={`${house.address} - ${index + 1}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <img
+              src="https://via.placeholder.com/600x400?text=No+Image"
+              alt="No image"
+              style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "10px" }}
+            />
+          )}
+        </div>
 
-        <div className="details-info">
-          <h1>{house.address}</h1>
+        {/* RIGHT: المعلومات */}
+        <div className="details-right" style={{ flex: 1 }}>
+          <h2>{house.address}</h2>
           <p><strong>Location:</strong> {house.location}</p>
           <p><strong>Price:</strong> {house.price} $</p>
           <p><strong>Status:</strong> {house.status}</p>
@@ -139,16 +146,13 @@ export default function HouseDetails() {
         </div>
       </div>
 
-      {/* مودال الطلب */}
+      {/* ===== Modal ===== */}
       {showModal && (
         <div
           className="modal fade show d-block"
           tabIndex="-1"
           role="dialog"
-          style={{
-            backgroundColor: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(6px)",
-          }}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)" }}
         >
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content p-4 rounded-4 shadow-lg">
@@ -165,36 +169,26 @@ export default function HouseDetails() {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                  ></textarea>
-                {house.type_request == 'partialSell' ?
-                <>
-                <label className="form-label mt-3">Percentage</label>
-                <input
-                  type="number" 
-                  placeholder="33%"
-                  required    
-                  name="rate"
-                  value={formData.rate}
-                  onChange={handleChange}
-                >
-                </input>                
-                </>
-                :
-                null
-                }                  
+                  />
+                  {house.type_request === 'partialSell' && (
+                    <>
+                      <label className="form-label mt-3">Percentage</label>
+                      <input
+                        type="number"
+                        placeholder="33%"
+                        required
+                        name="rate"
+                        value={formData.rate}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="d-flex justify-content-between">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Submit
-                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                  <button type="submit" className="btn btn-primary">Submit</button>
                 </div>
               </form>
             </div>
@@ -202,20 +196,16 @@ export default function HouseDetails() {
         </div>
       )}
 
-      <style>
-        {`
-          .blurred {
-            filter: blur(6px);
-            pointer-events: none;
-            user-select: none;
-          }
-          .details-image {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-          }
-        `}
-      </style>
+      {/* ===== Toast Box ===== */}
+      <div
+        className={`toast-box position-fixed top-0 end-0 m-3 p-3 rounded shadow ${
+          toast.show ? "show" : "hide"
+        } ${toast.type === "success" ? "bg-success" : "bg-danger"}`}
+        style={{ minWidth: "250px", color: "#fff", zIndex: 1050 }}
+      >
+        {toast.message}
+      </div>
     </div>
   );
 }
+ 

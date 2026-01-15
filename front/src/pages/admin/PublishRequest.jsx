@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 export default function PublishRequest() {
   const [requests, setRequests] = useState([]);
@@ -7,13 +8,22 @@ export default function PublishRequest() {
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  // ===== TOAST =====
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
+
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: "", type: "" }), 4000);
+  };
 
   // Fetch user buy requests
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (!token) {
-          setMessage("⚠️ Admin token not found. Please login first.");
+          showToast("⚠️ Admin token not found. Please login first.", "error");
           setLoading(false);
           return;
         }
@@ -29,7 +39,7 @@ export default function PublishRequest() {
         setRequests(reqData.data || []);
       } catch (err) {
         console.error(err);
-        setMessage("❌ Failed to load data.");
+        showToast("❌ Failed to load data.", "error");
       } finally {
         setLoading(false);
       }
@@ -59,7 +69,7 @@ export default function PublishRequest() {
 
       if (!response.ok) throw new Error(data.message || "Upload failed");
 
-      setMessage("📄 Contract uploaded successfully!");
+      showToast("📄 Contract uploaded successfully!", "success");
 
       // Update the UI with the returned contract URL
       setRequests((prev) =>
@@ -69,7 +79,7 @@ export default function PublishRequest() {
       );
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to upload contract.");
+      showToast("❌ Failed to upload contract.", "error");
     }
   };
 
@@ -77,8 +87,8 @@ export default function PublishRequest() {
 
   return (
     <div className="container mt-4">
+      <span className="back-arrow" onClick={() => navigate(-1)}>←</span>
       <h2 className="text-center mb-4">📬 Pending User Requests</h2>
-      {message && <div className="alert alert-info text-center">{message}</div>}
 
       <div className="row">
         {requests.length === 0 ? (
@@ -112,7 +122,6 @@ export default function PublishRequest() {
                     </span>
                   </p>
 
-                  {/* Show contract link if uploaded */}
                   {req.contract_image && (
                     <a
                       href={req.contract_image}
@@ -124,7 +133,6 @@ export default function PublishRequest() {
                     </a>
                   )}
 
-                  {/* Upload contract only if request is accepted */}
                   {req.status === "accepted" && (
                     <div className="mt-3">
                       <label className="form-label">Upload Contract:</label>
@@ -144,6 +152,13 @@ export default function PublishRequest() {
           ))
         )}
       </div>
+
+      {/* ===== TOAST ===== */}
+      {toast.show && (
+        <div className={`toast-box ${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

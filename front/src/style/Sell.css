@@ -1,0 +1,335 @@
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, sans-serif;
+  background: #f2ece6;
+}
+
+/* ===== PAGE ===== */
+.sell-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f2ece6;
+  position: relative;
+}
+
+/* BACK ARROW */
+.back-arrow {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f2ece6;
+  border: 1px solid #e0d9d2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #37383b;
+  z-index: 999;
+  transition: all 0.2s ease;
+}
+
+.back-arrow:hover {
+  background: #2c2e32;
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+/* ===== CARD ===== */
+.sell-card {
+  display: flex;
+  width: 1150px;
+  gap: 40px;
+}
+
+/* ===== LEFT SECTION ===== */
+.sell-left-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f2ece6;
+}
+
+.antigravity-container {
+  width: 800px;
+  height: 700px;
+  background: #f2ece6;
+}
+
+/* ===== RIGHT SECTION ===== */
+.sell-right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f2ece6;
+}
+
+/* ===== TITLE ===== */
+.text-type {
+  padding-left: 50px;
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #111;
+}
+
+/* ===== FORM ===== */
+.add-home-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #f2ece6;
+  align-items: flex-start;
+}
+
+/* ===== FIELD ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #040404;
+}
+
+/* ===== INPUTS ===== */
+.field input {
+  width: 250px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  background: #f2ece6;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SELECT (Dropdowns) ===== */
+.field select {
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  background: #f2ece6;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  width: auto;
+  /* بدون width ثابت */
+}
+
+/* ===== FORCE ALL FIELDS UNDER EACH OTHER ===== */
+.two-cols,
+.three-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ===== BUTTON & UPLOAD ===== */
+.q,
+.upload-btn {
+  width: 250px;
+  height: 30px;
+  font-size: 12px;
+  background: #f2ece6;
+  border: 1px solid #d1d5db;
+  color: #111;
+  cursor: pointer;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== IMAGES COUNT ===== */
+.images-count {
+  font-size: 12px;
+  color: #374151;
+  text-align: center;
+  width: 250px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+  .sell-card {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .antigravity-container {
+    height: 400px;
+  }
+}
+
+@media (max-width: 576px) {
+  .antigravity-container {
+    height: 300px;
+  }
+
+  .text-type {
+    font-size: 24px;
+  }
+}
+
+.toast-box {
+  position: fixed;
+  top: 30px;
+  right: -400px;
+  min-width: 280px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  z-index: 9999;
+  animation: slideIn 0.5s forwards, slideOut 0.5s forwards 3.5s;
+}
+
+/* SUCCESS */
+.toast-box.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 6px solid #2e7d32;
+}
+
+/* ERROR */
+.toast-box.error {
+  background: #fdecea;
+  color: #c62828;
+  border-left: 6px solid #c62828;
+}
+
+@keyframes slideIn {
+  from {
+    right: -400px;
+  }
+
+  to {
+    right: 30px;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    right: 30px;
+  }
+
+  to {
+    right: -400px;
+  }
+}
+
+
+.house-details-container {
+  margin-top: 30px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+  text-decoration: none;
+}
+
+.details-card {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.details-left {
+  flex: 1;
+  max-width: 60%;
+}
+
+.details-left .swiper-container {
+  width: 100%;
+  height: 400px;
+}
+
+.details-left .details-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.details-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
+}
+
+.house-title {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.request-btn {
+  width: 150px;
+  padding: 8px 12px;
+  margin-top: 15px;
+  align-self: flex-start;
+}
+
+/* ===== مودال الطلب ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-dialog-centered {
+  max-width: 500px;
+  width: 90%;
+}
+
+.blurred {
+  filter: blur(3px);
+}
+
+.toast-box {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: translateY(-20px);
+}
+
+.toast-box.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-box.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
