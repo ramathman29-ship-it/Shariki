@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Http\Controllers\PaymentController;
 use Stripe\PaymentIntent;
 use Mockery;
+use App\Notifications\GenericNotification;
 
 class PaymentControllerTest extends TestCase
 {
@@ -218,6 +219,106 @@ public function it_captures_payment_successfully()
         PaymentController::handlePaymentOnStatusChange($requestItem);
 
         $this->assertEquals('canceled', $payment->fresh()->status);
+    }
+
+    private function acceptedRequestWithAuthorizedPayment(): array
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+
+        $typeRequest = TypeRequest::factory()->create(['name' => 'partialSell']);
+        $property = Poperity::factory()->create([
+            'user_id' => $seller->id,
+            'price' => 1000,
+            'RT_id' => $typeRequest->id
+        ]);
+
+        $requestItem = RequestModel::factory()->create([
+            'user_id' => $buyer->id,
+            'prp_id' => $property->id,
+            'status' => 'accepted',
+            'payment_status' => 'pending'
+        ]);
+
+        Payment::create([
+            'request_id' => $requestItem->id,
+            'status' => 'authorized',
+            'balance' => 300,
+            'stripe_intent_id' => 'pi_test_123',
+            'amount_usd' => 300,
+            'platform_fee_usd' => 4.5
+        ]);
+
+        return [$buyer, $requestItem];
+    }
+
+    private function mockRetrievedIntent(string $status): void
+    {
+        $intent = new \stdClass();
+        $intent->id = 'pi_test_123';
+        $intent->status = $status;
+        $intent->client_secret = 'secret_test_123';
+
+        Mockery::mock('alias:' . PaymentIntent::class)
+            ->shouldReceive('retrieve')
+            ->with('pi_test_123')
+            ->andReturn($intent);
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function confirm_marks_request_held_when_card_is_authorized()
+    {
+        \Illuminate\Support\Facades\Notification::fake();
+        [$buyer, $requestItem] = $this->acceptedRequestWithAuthorizedPayment();
+        $this->mockRetrievedIntent('requires_capture');
+
+        $this->actingAs($buyer)
+            ->postJson("/api/user/requests/{$requestItem->id}/payment/confirm")
+            ->assertOk()
+            ->assertJson(['success' => true, 'payment_status' => 'held']);
+
+        $this->assertEquals('held', $requestItem->fresh()->payment_status);
+        \Illuminate\Support\Facades\Notification::assertSentTo($buyer, GenericNotification::class);
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function confirm_fails_when_card_was_not_authorized_yet()
+    {
+        [$buyer, $requestItem] = $this->acceptedRequestWithAuthorizedPayment();
+        $this->mockRetrievedIntent('requires_payment_method');
+
+        $this->actingAs($buyer)
+            ->postJson("/api/user/requests/{$requestItem->id}/payment/confirm")
+            ->assertStatus(400)
+            ->assertJson(['success' => false, 'status' => 'requires_payment_method']);
+
+        $this->assertEquals('pending', $requestItem->fresh()->payment_status);
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function starting_payment_again_reuses_the_unfinished_intent()
+    {
+        [$buyer, $requestItem] = $this->acceptedRequestWithAuthorizedPayment();
+        $this->mockRetrievedIntent('requires_payment_method');
+
+        $this->actingAs($buyer)
+            ->postJson("/api/user/requests/{$requestItem->id}/payment")
+            ->assertOk()
+            ->assertJson(['success' => true, 'client_secret' => 'secret_test_123']);
+
+        $this->assertEquals(1, Payment::where('request_id', $requestItem->id)->count());
     }
 
     protected function tearDown(): void

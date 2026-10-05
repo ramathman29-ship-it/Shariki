@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/requests', [RequestController::class, 'store']);
  Route::post('/requests/{id}/rejected', [RequestController::class, 'rejection']);
        Route::post('/requests/{id}/payment', [RequestController::class, 'payment_card']);
+        Route::post('/requests/{id}/payment/confirm', [RequestController::class, 'confirm_payment']);
         
         Route::put('/requests/{id}/status', [RequestController::class, 'updateStatus']);
 

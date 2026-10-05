@@ -1,0 +1,386 @@
+[
+  {
+    "id": 1,
+    "address": "Abu Rummaneh, Al-Jalaa Street, Building 14",
+    "location": "Damascus",
+    "project": "Al Jalaa Residences",
+    "type": "Apartment",
+    "description": "Bright 4th-floor apartment in one of the most sought-after neighbourhoods of Damascus. Large living room with a south-facing balcony, renovated kitchen, central heating and a private parking spot.",
+    "area": 185,
+    "price": 245000,
+    "condition": "green",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "3" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Floor", "description": "4th" },
+      { "title": "Parking", "description": "1 private spot" },
+      { "title": "Heating", "description": "Central" }
+    ]
+  },
+  {
+    "id": 2,
+    "address": "Yaafour, Villa Road 7",
+    "location": "Damascus",
+    "project": "Yaafour Gardens",
+    "type": "Villa",
+    "description": "Detached villa on a 900 m² plot with a swimming pool, mature olive trees and a covered terrace. Ideal for collective investment, with shares open from 5%.",
+    "area": 520,
+    "price": 1200000,
+    "condition": "green",
+    "type_request": "partialSell",
+    "available_percentage": 62,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "6" },
+      { "title": "Bathrooms", "description": "5" },
+      { "title": "Pool", "description": "Private, heated" },
+      { "title": "Garden", "description": "900 m² plot" },
+      { "title": "Parking", "description": "3 cars" }
+    ]
+  },
+  {
+    "id": 3,
+    "address": "Al-Mazzeh, Western Villas, Block 3",
+    "location": "Damascus",
+    "project": "Mazzeh Heights",
+    "type": "Apartment",
+    "description": "Fully furnished apartment close to universities and embassies. Quiet street, generator backup and 24/7 security.",
+    "area": 140,
+    "price": 650,
+    "condition": "green",
+    "type_request": "Rent",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "2" },
+      { "title": "Bathrooms", "description": "1" },
+      { "title": "Furnished", "description": "Yes" },
+      { "title": "Floor", "description": "2nd" }
+    ]
+  },
+  {
+    "id": 4,
+    "address": "Corniche Road, Seafront Tower B",
+    "location": "Latakia",
+    "project": "Blue Bay Towers",
+    "type": "Penthouse",
+    "description": "Top-floor penthouse with a 360° view of the Mediterranean. Wrap-around terrace, two master suites and direct elevator access.",
+    "area": 260,
+    "price": 410000,
+    "condition": "green",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "4" },
+      { "title": "Bathrooms", "description": "3" },
+      { "title": "View", "description": "Sea, 360°" },
+      { "title": "Terrace", "description": "120 m²" }
+    ]
+  },
+  {
+    "id": 5,
+    "address": "Al-Shatee Al-Azraq, Chalet 21",
+    "location": "Latakia",
+    "project": "Blue Beach Resort",
+    "type": "Chalet",
+    "description": "Beachfront chalet a few steps from the sand. Perfect for summer rentals and holiday income.",
+    "area": 95,
+    "price": 900,
+    "condition": "yellow",
+    "type_request": "Rent",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "2" },
+      { "title": "Bathrooms", "description": "1" },
+      { "title": "Beach access", "description": "Direct" }
+    ]
+  },
+  {
+    "id": 6,
+    "address": "Al-Furqan, Street 12, Building 5",
+    "location": "Aleppo",
+    "project": "Furqan Park",
+    "type": "Apartment",
+    "description": "Family apartment in a newly restored building next to Al-Furqan park. Wide rooms, double-glazed windows and a storage room.",
+    "area": 165,
+    "price": 98000,
+    "condition": "green",
+    "type_request": "partialSell",
+    "available_percentage": 40,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "3" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Floor", "description": "3rd" },
+      { "title": "Storage", "description": "Yes" }
+    ]
+  },
+  {
+    "id": 7,
+    "address": "Old City, Bab Al-Hadid Lane",
+    "location": "Aleppo",
+    "project": "Heritage Houses",
+    "type": "House",
+    "description": "Traditional Arabic courtyard house with a fountain, stone arches and carved wooden ceilings. Needs renovation: a rare heritage opportunity.",
+    "area": 310,
+    "price": 175000,
+    "condition": "red",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "5" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Courtyard", "description": "With fountain" },
+      { "title": "Built", "description": "Early 1900s" }
+    ]
+  },
+  {
+    "id": 8,
+    "address": "Al-Thawra Street, Business Center, Floor 6",
+    "location": "Damascus",
+    "project": "Thawra Business Center",
+    "type": "Office",
+    "description": "Open-plan office space in a central business tower. Reception area, two meeting rooms and a kitchenette.",
+    "area": 120,
+    "price": 1100,
+    "condition": "green",
+    "type_request": "Rent",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Meeting rooms", "description": "2" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Floor", "description": "6th" },
+      { "title": "Elevator", "description": "Yes" }
+    ]
+  },
+  {
+    "id": 9,
+    "address": "Al-Hamidiyah, Corniche Street 9",
+    "location": "Tartus",
+    "project": "Sea View Villas",
+    "type": "Villa",
+    "description": "Modern sea-view villa with a private garden and direct access to the coastal road. Fully finished with high-end materials.",
+    "area": 380,
+    "price": 520000,
+    "condition": "green",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "5" },
+      { "title": "Bathrooms", "description": "4" },
+      { "title": "Garden", "description": "Private" },
+      { "title": "View", "description": "Sea" }
+    ]
+  },
+  {
+    "id": 10,
+    "address": "Al-Mina District, Building 22",
+    "location": "Tartus",
+    "project": "Marina Residence",
+    "type": "Apartment",
+    "description": "Two-bedroom apartment near the port, ideal as a rental investment. Shares from 10% available.",
+    "area": 120,
+    "price": 85000,
+    "condition": "yellow",
+    "type_request": "partialSell",
+    "available_percentage": 75,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "2" },
+      { "title": "Bathrooms", "description": "1" },
+      { "title": "Floor", "description": "5th" }
+    ]
+  },
+  {
+    "id": 11,
+    "address": "Al-Waer, New Homs, Block 8",
+    "location": "Homs",
+    "project": "New Homs Towers",
+    "type": "Apartment",
+    "description": "Spacious apartment in a modern compound with a playground and underground parking. Close to schools and shops.",
+    "area": 155,
+    "price": 72000,
+    "condition": "green",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "3" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Parking", "description": "Underground" }
+    ]
+  },
+  {
+    "id": 12,
+    "address": "Al-Inshaat, Street 4",
+    "location": "Homs",
+    "project": "Inshaat Gardens",
+    "type": "House",
+    "description": "Two-storey family house with a rooftop terrace and a small garden. Quiet residential street.",
+    "area": 240,
+    "price": 450,
+    "condition": "yellow",
+    "type_request": "Rent",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "4" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Floors", "description": "2 + rooftop" }
+    ]
+  },
+  {
+    "id": 13,
+    "address": "Al-Mahatta, Orontes Riverside 3",
+    "location": "Hama",
+    "project": "Orontes View",
+    "type": "Apartment",
+    "description": "Riverside apartment overlooking the famous norias of Hama. Newly renovated with modern finishes.",
+    "area": 130,
+    "price": 64000,
+    "condition": "green",
+    "type_request": "partialSell",
+    "available_percentage": 55,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "2" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "View", "description": "River" }
+    ]
+  },
+  {
+    "id": 14,
+    "address": "Dummar Project, Island 9, Building 2",
+    "location": "Damascus",
+    "project": "Dummar Project",
+    "type": "Studio",
+    "description": "Compact, smartly designed studio in the new Dummar district. Great first home or rental unit.",
+    "area": 60,
+    "price": 58000,
+    "condition": "green",
+    "type_request": "fullSell",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "1" },
+      { "title": "Bathrooms", "description": "1" },
+      { "title": "Floor", "description": "1st" }
+    ]
+  },
+  {
+    "id": 15,
+    "address": "Slunfeh, Mountain Road 11",
+    "location": "Latakia",
+    "project": "Slunfeh Pines",
+    "type": "Villa",
+    "description": "Stone mountain villa surrounded by pine forest, 1,100 m above sea level. A cool summer retreat with strong holiday-rental demand.",
+    "area": 290,
+    "price": 380000,
+    "condition": "green",
+    "type_request": "partialSell",
+    "available_percentage": 30,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "4" },
+      { "title": "Bathrooms", "description": "3" },
+      { "title": "Fireplace", "description": "Yes" },
+      { "title": "Altitude", "description": "1,100 m" }
+    ]
+  },
+  {
+    "id": 16,
+    "address": "Kafr Souseh, Al-Tanzeem Street 6",
+    "location": "Damascus",
+    "project": "Kafr Souseh Plaza",
+    "type": "Apartment",
+    "description": "Modern apartment in a gated building with gym and rooftop lounge. Walking distance to Damascus City Mall.",
+    "area": 175,
+    "price": 1300,
+    "condition": "green",
+    "type_request": "Rent",
+    "available_percentage": 100,
+    "status": "view",
+    "photos": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&auto=format&fit=crop&q=70"
+    ],
+    "suffixes": [
+      { "title": "Bedrooms", "description": "3" },
+      { "title": "Bathrooms", "description": "2" },
+      { "title": "Gym", "description": "In building" },
+      { "title": "Furnished", "description": "Semi" }
+    ]
+  }
+]

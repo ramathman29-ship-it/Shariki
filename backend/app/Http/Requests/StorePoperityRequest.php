@@ -18,6 +18,7 @@ class StorePoperityRequest extends FormRequest
         return [
             'address' => 'required|string|max:100',
             'location' => 'required|string|max:100',
+            'project' => 'nullable|string|max:150',
             'area' => 'required|numeric|min:0',
             'status' => 'required|string|max:25',
             'price' => 'required|numeric|min:0',

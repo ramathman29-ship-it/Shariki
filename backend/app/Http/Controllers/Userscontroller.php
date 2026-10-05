@@ -98,6 +98,8 @@ public function profile(Request $request)
 
     return response()->json([
         'success' => true,
+        'id' => $user->id,
+        'is_admin' => $user->isAdmin(),
         'name' => $user->name,
         'email' =>$user->email,
         'personal_id' =>$user->personal_id,

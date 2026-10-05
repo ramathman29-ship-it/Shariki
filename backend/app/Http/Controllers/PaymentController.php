@@ -31,18 +31,36 @@ class PaymentController extends Controller
             ], 400);
         }
 
+        if (!config('services.stripe.secret')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stripe is not configured (STRIPE_SECRET is missing in .env)'
+            ], 503);
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+
         $existingPayment = Payment::where('request_id', $requestItem->id)
             ->where('status', 'authorized')
             ->first();
 
         if ($existingPayment) {
+            // المستخدم فتح نموذج البطاقة سابقاً ولم يُكمل: نُعيد نفس الـ PaymentIntent
+            $existingIntent = PaymentIntent::retrieve($existingPayment->stripe_intent_id);
+
+            if (in_array($existingIntent->status, ['requires_payment_method', 'requires_confirmation', 'requires_action'])) {
+                return response()->json([
+                    'success' => true,
+                    'client_secret' => $existingIntent->client_secret,
+                    'payment' => $existingPayment
+                ], 200);
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => 'تم حجز المبلغ مسبقاً لهذا الطلب'
             ], 409);
         }
-
-        Stripe::setApiKey(config('services.stripe.secret'));
 
         // تحديد المبلغ
         if ($requestItem->poperitys->typeRequest->name === 'fullSell') {
@@ -53,10 +71,12 @@ class PaymentController extends Controller
 
         $platformFee = round($amount * 0.015, 2);
 
-        // إنشاء PaymentIntent باستخدام بطاقة الاختبار لتجنب held
+        // مبلغ ثابت في وضع الاختبار. الحجز يدوي (manual) حتى يُلتقط عند رفع العقد في capturePayment
         $intent = PaymentIntent::create([
             'amount' => 1000,
             'currency' => 'usd',
+            'capture_method' => 'manual',
+            'metadata' => ['request_id' => $requestItem->id],
             'automatic_payment_methods' => [
                 'enabled' => true,
                 'allow_redirects' => 'never',
@@ -73,6 +93,44 @@ class PaymentController extends Controller
             'payment_status' => 'pending',
             'balance' => $amount,
         ]);
+
+        return response()->json([
+            'success' => true,
+            'client_secret' => $intent->client_secret,
+            'payment' => $payment
+        ], 201);
+    }
+
+    /**
+     * بعد أن يؤكد المستخدم البطاقة في الواجهة (Stripe.js): التحقق من أن المبلغ محجوز فعلاً
+     */
+    public static function confirmAuthorization(RequestModel $requestItem)
+    {
+        $payment = Payment::where('request_id', $requestItem->id)
+            ->where('status', 'authorized')
+            ->first();
+
+        if (!$payment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'لا يوجد دفع معلق لهذا الطلب'
+            ], 400);
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+        $intent = PaymentIntent::retrieve($payment->stripe_intent_id);
+
+        if ($intent->status !== 'requires_capture') {
+            return response()->json([
+                'success' => false,
+                'message' => 'لم يتم حجز المبلغ بعد',
+                'status' => $intent->status
+            ], 400);
+        }
+
+        $requestItem->update(['payment_status' => 'held']);
+
+        $amount = $payment->amount_usd;
         $buyer = $requestItem->user;
         $seller = $requestItem->poperitys->user;
         $url = "/user/requests/{$requestItem->id}";
@@ -88,11 +146,12 @@ class PaymentController extends Controller
             $url,
             NotificationType::PAYMENT_AUTHORIZED
         ));
+
         return response()->json([
             'success' => true,
-            'client_secret' => $intent->client_secret,
-            'payment' => $payment
-        ], 201);
+            'message' => 'Payment held successfully',
+            'payment_status' => 'held'
+        ]);
     }
 
     /**
