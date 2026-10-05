@@ -25,7 +25,7 @@ class PoperityController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Poperity::with('photos', 'typerequest')->where('is_approved', true);
+        $query = Poperity::with('photos', 'typerequest', 'suffixes')->where('is_approved', true);
 
         $this->applyFilters($query, $request);
 

@@ -24,6 +24,8 @@ public function run(): void
     );
 
     $admin->roles()->syncWithoutDetaching([$adminRole->id]);
+
+    $this->call(DemoDataSeeder::class);
 }
 
 }

@@ -1,0 +1,122 @@
+/* ==========================================================================
+   Base: design tokens, reset, typography, layout primitives.
+   Shared components live in components.css, page layouts in pages.css.
+   Every class is prefixed `sh-`.
+   ========================================================================== */
+
+:root {
+  --sh-bg: #f6f3ee;
+  --sh-bg-deep: #efe9e0;
+  --sh-surface: #ffffff;
+  --sh-ink: #1c1a17;
+  --sh-ink-2: #3a3631;
+  --sh-muted: #6e675e;
+  --sh-line: #e6dfd4;
+  --sh-accent: #9a5b34;
+  --sh-accent-hover: #7f4a2a;
+  --sh-accent-soft: #f4e9df;
+  --sh-green: #2e7d5b;
+  --sh-green-soft: #e2f1e9;
+  --sh-blue: #2f5f8a;
+  --sh-blue-soft: #e3edf6;
+  --sh-red: #b4452f;
+  --sh-red-soft: #f8e5e0;
+
+  --sh-radius-sm: 10px;
+  --sh-radius: 16px;
+  --sh-radius-lg: 24px;
+  --sh-shadow: 0 1px 2px rgba(28, 26, 23, .04), 0 8px 24px rgba(28, 26, 23, .06);
+  --sh-shadow-lg: 0 2px 4px rgba(28, 26, 23, .05), 0 24px 48px rgba(28, 26, 23, .12);
+
+  --sh-font: "Manrope", "Cairo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sh-font-display: "Fraunces", Georgia, serif;
+  --sh-tracking-tight: -.02em;
+  --sh-tracking-wide: .14em;
+  --sh-max: 1240px;
+}
+
+/* Arabic: Cairo for everything, no letter-spacing (it breaks joined letters) */
+[dir="rtl"] {
+  --sh-font: "Cairo", system-ui, "Segoe UI", sans-serif;
+  --sh-font-display: "Cairo", system-ui, sans-serif;
+  --sh-tracking-tight: 0;
+  --sh-tracking-wide: 0;
+}
+
+/* ---------- reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--sh-bg);
+  color: var(--sh-ink);
+  font-family: var(--sh-font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6, p, figure, blockquote { margin: 0; }
+img, svg, video { display: block; max-width: 100%; }
+img { height: auto; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid rgba(154, 91, 52, .35); outline-offset: 2px; }
+.sh-visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+/* direction-aware icons (arrows, chevrons) */
+[dir="rtl"] .sh-flip { transform: scaleX(-1); }
+
+/* ---------- layout ---------- */
+.sh-container {
+  width: 100%;
+  max-width: var(--sh-max);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.sh-section { padding: 88px 0; }
+.sh-section--tight { padding: 56px 0; }
+.sh-section--alt { background: var(--sh-surface); }
+
+.sh-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: var(--sh-tracking-wide);
+  text-transform: uppercase;
+  color: var(--sh-accent);
+  margin-bottom: 12px;
+}
+.sh-h1, .sh-h2, .sh-h3 {
+  font-family: var(--sh-font-display);
+  font-weight: 600;
+  color: var(--sh-ink);
+  letter-spacing: var(--sh-tracking-tight);
+  margin: 0;
+}
+.sh-h1 { font-size: clamp(38px, 6vw, 68px); line-height: 1.04; }
+.sh-h2 { font-size: clamp(28px, 3.6vw, 42px); line-height: 1.12; }
+.sh-h3 { font-size: 22px; line-height: 1.25; }
+.sh-lead {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--sh-muted);
+  margin: 16px 0 0;
+  max-width: 620px;
+}
+.sh-text { color: var(--sh-muted); line-height: 1.7; margin: 0; }
+
+.sh-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.sh-section-head--center { flex-direction: column; align-items: center; text-align: center; }
+.sh-section-head--center .sh-lead { margin-inline: auto; }
+

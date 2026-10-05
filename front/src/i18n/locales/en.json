@@ -1,0 +1,588 @@
+{
+  "brand": { "name": "Shariki", "homeLabel": "Shariki home" },
+
+  "common": {
+    "search": "Search",
+    "cancel": "Cancel",
+    "confirm": "Yes, continue",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue",
+    "next": "Next",
+    "previous": "Previous",
+    "delete": "Delete",
+    "view": "View",
+    "open": "Open",
+    "retry": "Try again",
+    "select": "Select",
+    "sending": "Sending…",
+    "uploading": "Uploading…",
+    "comma": ", ",
+    "learnMore": "Learn more",
+    "propertiesCount_one": "{{count}} property",
+    "propertiesCount_other": "{{count}} properties"
+  },
+
+  "nav": {
+    "main": "Main",
+    "home": "Home",
+    "properties": "Properties",
+    "about": "About us",
+    "myRequests": "My requests",
+    "myProperties": "My houses",
+    "profile": "My account",
+    "account": "Account",
+    "adminPanel": "Admin panel",
+    "listProperty": "List your property",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "menu": "Menu",
+    "switchLanguage": "Switch language",
+    "notifications": "Notifications",
+    "unread_one": "{{count}} unread",
+    "unread_other": "{{count}} unread",
+    "noNotifications": "You're all caught up."
+  },
+
+  "deal": {
+    "sale": "For sale",
+    "partial": "Shares available",
+    "rent": "For rent",
+    "short": { "sale": "For sale", "partial": "Shares", "rent": "For rent" }
+  },
+
+  "condition": { "excellent": "Excellent", "good": "Good", "renovation": "Needs renovation" },
+
+  "property": {
+    "perMonth": "/ month",
+    "available": "{{value}}% available",
+    "owned": "{{value}}% owned",
+    "area": "{{value}} m²",
+    "beds_one": "{{count}} bed",
+    "beds_other": "{{count}} beds",
+    "baths_one": "{{count}} bath",
+    "baths_other": "{{count}} baths"
+  },
+
+  "home": {
+    "eyebrow": "Real estate across Syria",
+    "title": "Own a home, or a share of one.",
+    "lead": "Buy outright, rent, or invest from just 1% of a property. Every share is legally registered in your name.",
+    "searchTabs": { "sale": "Buy", "partial": "Co-own", "rent": "Rent" },
+    "searchPlaceholder": "Neighbourhood, project or street",
+    "stats": { "listings": "Active listings", "cities": "Cities covered", "minShare": "Minimum share" },
+    "featured": { "eyebrow": "Featured", "title": "Handpicked properties", "viewAll": "View all properties" },
+    "ways": {
+      "eyebrow": "Three ways in",
+      "title": "However you want to own, we've got you",
+      "sale": {
+        "title": "Buy a whole property",
+        "text": "Apartments, villas and houses with verified ownership papers and a single transparent 2% commission.",
+        "cta": "Browse homes for sale"
+      },
+      "partial": {
+        "title": "Co-own with shares",
+        "text": "Invest from 1% to 100% of a property alongside other investors and earn returns in proportion to your share.",
+        "cta": "See open shares"
+      },
+      "rent": {
+        "title": "Rent with confidence",
+        "text": "Monthly or yearly rentals with clear fees, checked listings and contracts supervised by our legal team.",
+        "cta": "Find a rental"
+      }
+    },
+    "cities": { "eyebrow": "Locations", "title": "Explore by city" },
+    "steps": {
+      "eyebrow": "Co-ownership",
+      "title": "How shared ownership works",
+      "1": { "title": "Pick a property", "text": "Browse listings marked “Shares available” and check how much is still open." },
+      "2": { "title": "Choose your share", "text": "Request any percentage you like, from 1% up to everything that's available." },
+      "3": { "title": "Sign & pay securely", "text": "Our legal team prepares the contract and the share is registered in your name." },
+      "4": { "title": "Earn returns", "text": "Once fully owned, the property is rented out and income is split by share." }
+    },
+    "cta": {
+      "eyebrow": "For owners",
+      "title": "Selling or renting out a property?",
+      "text": "List it on Shariki in a few minutes. Sell it whole, rent it out, or open it up to investors share by share.",
+      "fees": "See our fees"
+    }
+  },
+
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all",
+    "all": "All",
+    "any": "Any",
+    "keyword": "Keyword",
+    "keywordPlaceholder": "Street, project…",
+    "city": "City",
+    "allCities": "All cities",
+    "type": "Property type",
+    "anyType": "Any type",
+    "price": "Price (USD)",
+    "priceMonthly": "Price (USD / month)",
+    "min": "Min",
+    "max": "Max",
+    "bedrooms": "Bedrooms",
+    "minArea": "Minimum area (m²)",
+    "minAreaPlaceholder": "e.g. 120",
+    "condition": "Condition",
+    "sort": "Sort",
+    "sorts": {
+      "newest": "Newest first",
+      "price-asc": "Price: low to high",
+      "price-desc": "Price: high to low",
+      "area-desc": "Largest area"
+    },
+    "chipMin": "Min ${{value}}",
+    "chipMax": "Max ${{value}}",
+    "chipArea": "{{value}}+ m²",
+    "chipBeds": "{{value}}+ beds",
+    "remove": "Remove filter: {{label}}",
+    "showResults_one": "Show {{count}} result",
+    "showResults_other": "Show {{count}} results"
+  },
+
+  "properties": {
+    "title": {
+      "all": "All properties",
+      "sale": "Properties for sale",
+      "partial": "Properties open for shares",
+      "rent": "Properties for rent"
+    },
+    "inCity": "in {{city}}",
+    "lead": "Buy outright, rent, or co-own a share. Use the filters to find the one for you.",
+    "demoNotice": "Showing demo listings: the server is offline or has no approved properties yet.",
+    "empty": {
+      "title": "No properties match these filters",
+      "text": "Try removing a filter or widening your price range."
+    }
+  },
+
+  "details": {
+    "priceLabel": { "sale": "Asking price", "partial": "Full property value", "rent": "Monthly rent" },
+    "requestCta": { "sale": "Request to buy", "partial": "Request this share", "rent": "Request to rent" },
+    "ownedByInvestors": "{{value}}% owned by investors",
+    "open": "{{value}}% open",
+    "yourShare": "Your share",
+    "estimatedCost": "Estimated cost",
+    "legalNote": "Contracts are reviewed by our legal team and every share is registered in the owner's name.",
+    "openPhoto": "Open photo {{n}}",
+    "photos_one": "{{count}} photo",
+    "photos_other": "{{count}} photos",
+    "facts": { "area": "Area", "bedrooms": "Bedrooms", "bathrooms": "Bathrooms", "type": "Type" },
+    "about": "About this property",
+    "features": "Features",
+    "details": "Details",
+    "info": {
+      "project": "Project",
+      "city": "City",
+      "condition": "Condition",
+      "listing": "Listing",
+      "availableShare": "Available share",
+      "reference": "Reference"
+    },
+    "similar": "Similar properties",
+    "moreIn": "More in {{city}}",
+    "notFound": {
+      "title": "Property not found",
+      "text": "It may have been sold, rented or removed.",
+      "back": "Back to properties"
+    },
+    "request": {
+      "title": "Send a request",
+      "share": "Share percentage (max {{max}}%)",
+      "message": "Message",
+      "placeholder": "Tell the owner about your request, e.g. when you'd like to visit…",
+      "submit": "Send request",
+      "sent": "Request sent. You'll be notified when the owner replies."
+    }
+  },
+
+  "about": {
+    "eyebrow": "About Shariki",
+    "title": "Real estate ownership, made shareable.",
+    "lead": "Shariki (شريكي) means “my partner” in Arabic. We believe owning property in Syria shouldn't be limited to the few who can pay the full price upfront. So we split properties into shares anyone can own, and we handle everything from paperwork to handover.",
+    "browse": "Browse properties",
+    "stats": ["Minimum investment share", "Syrian cities covered", "Flat sales commission", "Legally registered shares"],
+    "mission": {
+      "eyebrow": "Our mission",
+      "title": "Make property investment accessible to everyone",
+      "lead": "Real estate has always been one of the safest ways to protect and grow savings. We're opening it up to a much wider part of society.",
+      "points": [
+        "Investment accessible to every budget, not just big buyers.",
+        "Additional income for families through profit sharing.",
+        "Better financial awareness about collective investment.",
+        "A trusted, inclusive community of investors and owners."
+      ]
+    },
+    "offer": {
+      "eyebrow": "What we offer",
+      "title": "Sales, purchases, rentals and shares",
+      "lead": "One platform for every way of owning real estate.",
+      "items": [
+        {
+          "title": "Smart real estate investment",
+          "text": "Collective investment from 1% to 100% of a property. Open to every budget and ideal for Syrians abroad looking for opportunities at home."
+        },
+        {
+          "title": "A platform for projects",
+          "text": "Developers and owners showcase their projects. We divide each property into small shares that many investors can buy securely."
+        },
+        {
+          "title": "Secure ownership",
+          "text": "Every investor owns a legally registered share in their name and receives returns in proportion to that share."
+        }
+      ]
+    },
+    "how": {
+      "title": "From listing to ownership in four steps",
+      "steps": [
+        { "title": "Owners list a property", "text": "Sell it whole, rent it out, or open it to investors share by share." },
+        { "title": "We verify it", "text": "Our team reviews every listing and its papers before it goes live." },
+        { "title": "Buyers & investors request", "text": "Request the whole property or any share you like, then pay securely." },
+        { "title": "Contract & returns", "text": "The legal contract is registered in your name and returns follow your share." }
+      ]
+    },
+    "fees": {
+      "title": "Transparent from day one",
+      "lead": "Licensed by the Ministry of Supply (Company Register No. 2222) and registered with the Ministry of Finance (Tax No. 2222).",
+      "items": [
+        { "title": "Commission on sales", "text": "A single, transparent 2% commission on every completed property sale. No hidden fees." },
+        { "title": "Annual rentals", "text": "For yearly rentals, the platform fee is equal to one month of rent." },
+        { "title": "Monthly rentals", "text": "For rentals of one month or more (but less than a year), the platform charges 10% of the rent." },
+        { "title": "Legal supervision", "text": "A licensed legal agency reviews every contract across all provinces before any money changes hands." }
+      ]
+    },
+    "cta": {
+      "title": "Ready to own your first share?",
+      "text": "Explore properties open for investment and start from as little as 1%.",
+      "shares": "See open shares"
+    }
+  },
+
+  "auth": {
+    "signinTitle": "Welcome back",
+    "signinLead": "Sign in to manage your requests, listings and shares.",
+    "signupTitle": "Create your account",
+    "signupLead": "It takes two minutes. We need a few details for legal registration.",
+    "visualText": "Join investors and families across Syria buying, renting and co-owning verified properties with legally registered shares.",
+    "flatCommission": "Flat commission",
+    "backToSite": "Back to site",
+    "createAccount": "Create account",
+    "creating": "Creating account…",
+    "signingIn": "Signing in…",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "demo": "Demo account",
+    "useDemo": "Use it",
+    "step": "Step {{step}} of {{total}}",
+    "stepAccount": "Account",
+    "stepPersonal": "Personal details",
+    "countryCode": "Country code",
+    "male": "Male",
+    "female": "Female",
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "password_confirmation": "Confirm password",
+      "personal_id": "National ID number",
+      "gender": "Gender",
+      "mobile1": "Mobile",
+      "birthday": "Date of birth",
+      "nationality": "Nationality",
+      "job": "Occupation",
+      "residency": "City of residence",
+      "budget": "Investment budget (USD, optional)"
+    },
+    "placeholders": {
+      "password": "At least 8 characters",
+      "password_confirmation": "Repeat your password"
+    },
+    "errors": {
+      "invalid": "Incorrect email or password.",
+      "passwordLength": "At least 8 characters.",
+      "passwordMatch": "Passwords don't match.",
+      "fixFields": "Please fix the highlighted fields."
+    },
+    "welcomeBack": "Welcome back!",
+    "accountCreated": "Account created, welcome to Shariki!",
+    "signedOut": "Signed out successfully",
+    "terms": "By continuing you agree to Shariki's terms and privacy policy."
+  },
+
+  "list": {
+    "lead": "Tell us about your property. Our team reviews every listing before it goes live.",
+    "sections": {
+      "deal": { "title": "What would you like to do?", "text": "Choose how you want to list the property." },
+      "location": { "title": "Location", "text": "Where is the property?" },
+      "details": { "title": "Property details", "text": "The basics buyers look at first." },
+      "photos": { "title": "Photos", "text": "Listings with good photos get far more requests." }
+    },
+    "deals": {
+      "sale": { "title": "Sell", "text": "Sell the whole property" },
+      "partial": { "title": "Sell shares", "text": "Open it to investors" },
+      "rent": { "title": "Rent out", "text": "Monthly or yearly" }
+    },
+    "fields": {
+      "location": "City",
+      "project": "Project / building name",
+      "address": "Address",
+      "type": "Property type",
+      "condition": "Condition",
+      "area": "Area (m²)",
+      "available_percentage": "Share open to investors (%)",
+      "description": "Description"
+    },
+    "placeholders": {
+      "location": "e.g. Damascus",
+      "project": "Optional",
+      "address": "Neighbourhood, street, building",
+      "area": "e.g. 150",
+      "price": "",
+      "available_percentage": "1 – 99",
+      "description": "Rooms, view, finishing, nearby services…"
+    },
+    "priceLabel": {
+      "sale": "Asking price (USD)",
+      "partial": "Full property value (USD)",
+      "rent": "Monthly rent (USD)"
+    },
+    "addPhotos": "Click to add photos",
+    "photoHint": "JPG, PNG or WEBP, up to 4 MB each",
+    "removePhoto": "Remove photo",
+    "submit": "Submit for review",
+    "submitting": "Submitting…",
+    "submitted": "Property submitted. It will go live after admin approval.",
+    "errors": { "share": "Available share must be between 1 and 99%." },
+    "next": {
+      "title": "What happens next",
+      "steps": [
+        "Our team reviews your listing and papers.",
+        "Once approved, it goes live for buyers and investors.",
+        "You get notified for every new request.",
+        "Our legal team handles the contract."
+      ]
+    },
+    "feesTitle": "Fees",
+    "fees": {
+      "sale": "2% commission on completed sales.",
+      "rent": "One month of rent for annual rentals, 10% for shorter ones."
+    }
+  },
+
+  "payment": {
+    "title": "Hold the payment",
+    "lead": "Enter your card. The amount is reserved on your card, not charged.",
+    "amount": "Amount to hold",
+    "submit": "Hold amount",
+    "processing": "Processing…",
+    "testHint": "Test mode: use card",
+    "failed": "The payment could not be completed. Please try again.",
+    "notHeld": "The amount wasn't held (status: {{status}}). Please try again.",
+    "notConfigured": "Card payments aren't set up yet. Add VITE_STRIPE_KEY to the front-end .env."
+  },
+  "requests": {
+    "lead": "Track the requests you sent and respond to people interested in your properties.",
+    "tabs": { "sent": "Sent", "received": "Received" },
+    "new_one": "{{count}} new",
+    "new_other": "{{count}} new",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "done": "Completed",
+      "investment": "Completed"
+    },
+    "propertyNumber": "Property #{{id}}",
+    "share": "{{value}}% share",
+    "cancel": "Cancel request",
+    "accept": "Accept",
+    "reject": "Reject",
+    "holdPayment": "Hold payment",
+    "holdHint": "The amount is held, not charged, until you approve the contract.",
+    "paymentHeld": "Payment held",
+    "changedMind": "I changed my mind",
+    "confirmCancel": { "title": "Cancel this request?", "text": "The owner will no longer see it." },
+    "confirmReject": { "title": "Reject this request?", "text": "The requester will be notified." },
+    "confirmRelease": {
+      "title": "Release the payment?",
+      "text": "The held amount is returned to you and the request is closed."
+    },
+    "toast": {
+      "cancelled": "Request cancelled",
+      "held": "Payment held. The owner will now prepare the contract.",
+      "released": "Payment released and request closed",
+      "accepted": "Request accepted",
+      "rejected": "Request rejected"
+    },
+    "empty": {
+      "sent": {
+        "title": "You haven't sent any requests yet",
+        "text": "Find a property you like and send a request to buy, rent or co-own it.",
+        "cta": "Browse properties"
+      },
+      "received": {
+        "title": "No requests on your properties yet",
+        "text": "When someone is interested in one of your listings, it shows up here.",
+        "cta": "List a property"
+      }
+    }
+  },
+
+  "myProperties": {
+    "lead": "Your listings and the shares you own, in one place.",
+    "add": "List a property",
+    "kpi": { "listings": "My listings", "live": "Live now", "shares": "Shares owned", "value": "Share value" },
+    "tabs": { "listings": "My listings", "shares": "My shares" },
+    "status": { "pending": "Pending review", "view": "Live", "done": "Completed" },
+    "pendingHint": "Visible to buyers once an admin approves it.",
+    "soldToInvestors": "{{value}}% sold to investors",
+    "property": "Property",
+    "contract": "Contract",
+    "contractPending": "Contract in preparation",
+    "shareValue": "Your share: {{value}}",
+    "shareOf": "{{value}}% of {{total}}",
+    "since": "Since {{date}}",
+    "deleted": "Property deleted",
+    "confirmDelete": {
+      "title": "Delete this property?",
+      "text": "“{{name}}” will be removed permanently. This can't be undone."
+    },
+    "empty": {
+      "listings": {
+        "title": "You haven't listed any property yet",
+        "text": "Sell it, rent it out, or open it to investors in a few minutes.",
+        "cta": "List your first property"
+      },
+      "shares": {
+        "title": "You don't own any shares yet",
+        "text": "Co-own a property from just 1% and earn returns from your share."
+      }
+    }
+  },
+
+  "profile": {
+    "lead": "Your personal details as registered on Shariki.",
+    "personalInfo": "Personal information",
+    "personalInfoText": "Used for legal registration of your contracts and shares.",
+    "budget": "Investment budget",
+    "notProvided": "Not provided",
+    "roleAdmin": "Administrator",
+    "roleMember": "Member",
+    "complete": "Profile complete",
+    "missing_one": "{{count}} field missing",
+    "missing_other": "{{count}} fields missing",
+    "privacyNote": "Your details are only shared with our legal team when a contract is prepared."
+  },
+
+  "admin": {
+    "title": "Admin",
+    "greeting": "Welcome, {{name}}",
+    "backToSite": "Back to site",
+    "nav": {
+      "overview": "Overview",
+      "listings": "Listing approvals",
+      "contracts": "Contracts",
+      "reports": "Reports"
+    },
+    "overview": {
+      "lead": "What needs your attention today.",
+      "listings": { "title": "Listings waiting for approval", "text": "Review new properties before they go live." },
+      "contracts": { "title": "Requests waiting for a contract", "text": "Upload the signed contract for accepted requests." },
+      "reports": { "title": "Reports", "text": "Daily and monthly numbers for users, listings and sales." }
+    },
+    "listings": {
+      "lead": "New properties appear here until you approve or reject them.",
+      "approve": "Approve",
+      "approved": "Property approved and published",
+      "rejected": "Property rejected and removed",
+      "confirmReject": {
+        "title": "Reject this property?",
+        "text": "The listing and its photos will be deleted."
+      },
+      "empty": { "title": "Nothing to review", "text": "New listings will show up here." }
+    },
+    "contracts": {
+      "lead": "Accepted requests that need a signed contract.",
+      "upload": "Upload contract",
+      "replace": "Replace contract",
+      "uploaded": "Contract uploaded",
+      "empty": { "title": "No accepted requests", "text": "Requests accepted by owners will show up here." }
+    },
+    "reports": {
+      "lead": "Platform activity at a glance.",
+      "daily": "Daily",
+      "monthly": "Monthly",
+      "sections": { "users": "Users", "properties": "Properties", "requests": "Requests", "sales": "Sales" },
+      "rows": {
+        "current_daily": "Today",
+        "current_monthly": "This month",
+        "previous_daily": "Yesterday",
+        "previous_monthly": "Last month",
+        "total": "Total users",
+        "growth": "Growth rate",
+        "notApproved": "Not approved",
+        "partialSold": "Partially sold",
+        "fullySold": "Fully sold",
+        "rent": "For rent",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "partialCurrent_daily": "Partial sales today",
+        "partialCurrent_monthly": "Partial sales this month",
+        "fullCurrent_daily": "Full sales today",
+        "fullCurrent_monthly": "Full sales this month",
+        "partialPrevious_daily": "Partial sales yesterday",
+        "partialPrevious_monthly": "Partial sales last month",
+        "fullPrevious_daily": "Full sales yesterday",
+        "fullPrevious_monthly": "Full sales last month",
+        "partialImprovement": "Partial sales change",
+        "fullImprovement": "Full sales change"
+      }
+    }
+  },
+
+  "footer": {
+    "tagline": "Buy, rent or co-own real estate across Syria. Invest from 1% of a property with legally registered shares.",
+    "address": "Al-Mazzeh, Damascus, Syria",
+    "explore": "Explore",
+    "allProperties": "All properties",
+    "company": "Company",
+    "howItWorks": "How it works",
+    "fees": "Fees & rules",
+    "newsletter": "Newsletter",
+    "newsletterText": "New listings and market insights, once a month.",
+    "emailPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "subscribed": "Thanks! You're on the list.",
+    "rights": "© {{year}} Shariki Real Estate. All rights reserved.",
+    "registration": "Company Register No. 2222 · Tax No. 2222"
+  },
+
+  "notFound": {
+    "title": "This page has moved out",
+    "text": "The page you were looking for doesn't exist or was removed.",
+    "home": "Back to home",
+    "browse": "Browse properties"
+  },
+
+  "errors": {
+    "title": "Something went wrong",
+    "network": "Can't reach the server. Make sure the backend is running and try again.",
+    "forbidden": "You don't have permission to do that.",
+    "generic": "Something went wrong. Please try again."
+  },
+
+  "data": {
+    "cities": {},
+    "types": {},
+    "features": {},
+    "values": {}
+  }
+}

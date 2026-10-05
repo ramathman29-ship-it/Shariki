@@ -193,17 +193,35 @@ public function tearDown(): void
             'status' => 'accepted'
         ]);
 
-        $response = $this->actingAs($user)
+        $response = $this->actingAs($requestOwner)
                          ->postJson("/api/user/requests/{$requestItem->id}/payment");
 
-        $response->assertStatus(200)
-                 ->assertJson(['success' => true]);
+        // الخطوة 1 تُرجع client_secret فقط، والحالة تصبح held بعد /payment/confirm
+        $response->assertStatus(201)
+                 ->assertJson(['success' => true, 'client_secret' => 'secret_test_123']);
 
-        // توافق مع منطق الـ controller الحالي
         $this->assertDatabaseHas('requests', [
             'id' => $requestItem->id,
-            'payment_status' => 'held' // أو 'paid' حسب التطبيق
+            'payment_status' => 'pending'
         ]);
+    }
+
+    /** @test */
+    public function test_only_requester_can_pay_for_request()
+    {
+        $user = User::factory()->create();
+        $requestOwner = User::factory()->create();
+        $property = Poperity::factory()->create(['user_id' => $user->id]);
+        $requestItem = RequestModel::factory()->create([
+            'user_id' => $requestOwner->id,
+            'prp_id' => $property->id,
+            'payment_status' => 'pending',
+            'status' => 'accepted'
+        ]);
+
+        $this->actingAs($user)
+             ->postJson("/api/user/requests/{$requestItem->id}/payment")
+             ->assertStatus(403);
     }
 
     /** @test */
@@ -219,7 +237,7 @@ public function tearDown(): void
             'status' => 'pending'
         ]);
 
-        $response = $this->actingAs($user)
+        $response = $this->actingAs($requestOwner)
                          ->postJson("/api/user/requests/{$requestItem->id}/payment");
 
         $response->assertStatus(400)

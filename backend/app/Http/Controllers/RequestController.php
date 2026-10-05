@@ -39,6 +39,8 @@ class RequestController extends Controller
                     'message' => 'Property not found'
                 ], 404);
             }
+            // rent requests take the whole property
+            $rate = 100;
             if ($property->typeRequest && $property->typeRequest->name === 'fullSell') {
                 $rate = 100;
             } else if ($property->typeRequest && $property->typeRequest->name === 'partialSell') {
@@ -172,16 +174,66 @@ class RequestController extends Controller
             ], 500);
         }
     }
+    /**
+     * الخطوة 1: إنشاء PaymentIntent وإرجاع client_secret لنموذج البطاقة في الواجهة
+     */
     public function payment_card(HttpRequest $request, $id)
     {
-        $user = Auth::user();
-        $requestItem = RequestModel::with('poperitys')->find($id);
+        $requestItem = RequestModel::with('poperitys.typeRequest', 'poperitys.user', 'user')->find($id);
 
+        if ($error = $this->paymentGuard($requestItem)) {
+            return $error;
+        }
+
+        try {
+            return PaymentController::authorizePayment($requestItem);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return $this->stripeError($e);
+        }
+    }
+
+    /**
+     * الخطوة 2: بعد تأكيد البطاقة عبر Stripe.js يصبح الطلب "held"
+     */
+    public function confirm_payment(HttpRequest $request, $id)
+    {
+        $requestItem = RequestModel::with('poperitys.user', 'user')->find($id);
+
+        if ($error = $this->paymentGuard($requestItem)) {
+            return $error;
+        }
+
+        try {
+            return PaymentController::confirmAuthorization($requestItem);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return $this->stripeError($e);
+        }
+    }
+
+    private function stripeError(\Stripe\Exception\ApiErrorException $e): JsonResponse
+    {
+        Log::error('Stripe error: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Payment service error: ' . $e->getMessage()
+        ], 502);
+    }
+
+    private function paymentGuard(?RequestModel $requestItem): ?JsonResponse
+    {
         if (!$requestItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Request not found'
             ], 404);
+        }
+
+        if ((int) $requestItem->user_id !== (int) Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         if ($requestItem->status !== 'accepted') {
@@ -199,17 +251,7 @@ class RequestController extends Controller
             ], 400);
         }
 
-        // تنفيذ الاحتجاز لأول مرة
-        PaymentController::authorizePayment($requestItem);
-
-        // تحديث الحالة بعد الاحتجاز
-        $requestItem->payment_status = 'held';
-        $requestItem->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment held successfully'
-        ]);
+        return null;
     }
 
 
